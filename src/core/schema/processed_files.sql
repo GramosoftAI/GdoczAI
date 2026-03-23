@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS processed_files (
+    file_id SERIAL PRIMARY KEY,
+    file_name VARCHAR(500) NOT NULL,
+    page_count INTEGER,
+    processed_on TIMESTAMP,
+    processing_duration FLOAT,
+    json_output JSONB,
+    markdown_output TEXT,
+    mineru_markdown_content TEXT,
+    olmocr_markdown_content TEXT,
+    olmocr_used VARCHAR(3) DEFAULT 'No',
+    missed_keys TEXT,
+    token_usage INTEGER,
+    error_details TEXT,
+    unique_id VARCHAR(255),
+    processing_status VARCHAR(50),
+    created_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    request_id VARCHAR(100) UNIQUE,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE SET NULL,
+    file_path TEXT
+);

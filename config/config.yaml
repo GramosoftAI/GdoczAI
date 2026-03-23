@@ -1,0 +1,210 @@
+# SFTP & SMTP Configuration
+authentication:
+  signin_url: "${AUTH_SIGNIN_URL}"
+  username: "${AUTH_USERNAME}"
+  password: "${AUTH_PASSWORD}"
+  token_refresh_interval_hours: ${AUTH_TOKEN_REFRESH_INTERVAL_HOURS}
+
+ocr:
+  endpoint_url: "${OCR_ENDPOINT_URL}"
+  timeout_seconds: ${OCR_TIMEOUT_SECONDS}
+
+scheduler:
+  token_refresh_check_interval_minutes: ${SCHEDULER_TOKEN_REFRESH_CHECK_INTERVAL_MINUTES}
+
+email_fetch_scheduler:
+  token_refresh_check_interval_minutes: ${EMAIL_FETCH_SCHEDULER_TOKEN_REFRESH_CHECK_INTERVAL_MINUTES}
+
+log_level: "${LOG_LEVEL}"
+max_retry_attempts: ${MAX_RETRY_ATTEMPTS}
+retry_delay_seconds: ${RETRY_DELAY_SECONDS}
+
+# Storage Configuration
+storage:
+  storage_type: "${STORAGE_TYPE}"  # Options: "local" or "s3"
+  
+  # Local Storage Configuration (used when storage_type = "local")
+  local_storage:
+    enabled: ${LOCAL_STORAGE_ENABLED}
+    base_path: "${LOCAL_STORAGE_BASE_PATH}"
+    create_date_folders: ${LOCAL_STORAGE_CREATE_DATE_FOLDERS}
+    preserve_original_name: ${LOCAL_STORAGE_PRESERVE_ORIGINAL_NAME}
+  
+  # S3 Storage Configuration (used when storage_type = "s3")
+  s3_storage:
+    enabled: ${S3_STORAGE_ENABLED}
+    aws_access_key_id: "${S3_AWS_ACCESS_KEY_ID}"
+    aws_secret_access_key: "${S3_AWS_SECRET_ACCESS_KEY}"
+    aws_region: "${S3_AWS_REGION}"
+    bucket_name: "${S3_BUCKET_NAME}"
+    bucket_prefix: "${S3_BUCKET_PREFIX}"
+    create_date_folders: ${S3_CREATE_DATE_FOLDERS}
+    storage_class: "${S3_STORAGE_CLASS}"
+    enable_versioning: ${S3_ENABLE_VERSIONING}
+    server_side_encryption: "${S3_SERVER_SIDE_ENCRYPTION}"
+    acl: "${S3_ACL}"
+    
+  # General Storage Settings
+  save_original_pdf: ${SAVE_ORIGINAL_PDF}
+  include_metadata: ${INCLUDE_METADATA}
+  cleanup_after_storage: ${CLEANUP_AFTER_STORAGE}
+
+# Google Gemini Configuration
+gemini:
+  api_key: "${GEMINI_API_KEY}"
+  model: "${GEMINI_MODEL}"
+  timeout_seconds: ${GEMINI_TIMEOUT_SECONDS}
+  max_retries: ${GEMINI_MAX_RETRIES}
+  retry_delay_seconds: ${GEMINI_RETRY_DELAY_SECONDS}
+  max_tokens: ${GEMINI_MAX_TOKENS}
+  temperature: ${GEMINI_TEMPERATURE}
+
+chunking:
+  enabled: ${CHUNKING_ENABLED}
+  chunk_size: ${CHUNK_SIZE}
+  overlap: ${CHUNK_OVERLAP}
+
+manual_splitting:
+  enabled: ${MANUAL_SPLITTING_ENABLED}
+  threshold_characters: ${MANUAL_SPLITTING_THRESHOLD_CHARACTERS}
+  max_rows_per_chunk: ${MANUAL_SPLITTING_MAX_ROWS_PER_CHUNK}
+
+# PostgreSQL Database Configuration
+postgres:
+  host: "${POSTGRES_HOST}"
+  port: ${POSTGRES_PORT}
+  database: "${POSTGRES_DATABASE}"
+  user: "${POSTGRES_USER}"
+  password: "${POSTGRES_PASSWORD}"
+
+# Security Configuration
+security:
+  jwt_secret_key: "${JWT_SECRET_KEY}"
+  jwt_algorithm: "${JWT_ALGORITHM}"
+  access_token_expire_minutes: ${ACCESS_TOKEN_EXPIRE_MINUTES}
+  password_reset_token_expire_hours: ${PASSWORD_RESET_TOKEN_EXPIRE_HOURS}
+  encryption_key: "${ENCRYPTION_KEY}"
+
+# API Key Configuration
+encryption:
+  api_key_encryption_key: "${API_KEY_ENCRYPTION_KEY}"
+
+# Email Configuration
+email:
+  host: "${EMAIL_HOST}"
+  port: ${EMAIL_PORT}
+  username: "${EMAIL_USERNAME}"
+  password: "${EMAIL_PASSWORD}"
+  from_email: "${EMAIL_FROM_EMAIL}"
+  from_name: "${EMAIL_FROM_NAME}"
+  use_tls: ${EMAIL_USE_TLS}
+  reset_password_url: "${EMAIL_RESET_PASSWORD_URL}"
+
+email_notifications:
+  enabled: ${EMAIL_NOTIFICATIONS_ENABLED}
+  smtp_host: "${EMAIL_NOTIFICATIONS_SMTP_HOST}"
+  smtp_port: ${EMAIL_NOTIFICATIONS_SMTP_PORT}
+  smtp_username: "${EMAIL_NOTIFICATIONS_SMTP_USERNAME}"
+  smtp_password: "${EMAIL_NOTIFICATIONS_SMTP_PASSWORD}"
+  from_email: "${EMAIL_NOTIFICATIONS_FROM_EMAIL}"
+  from_name: "${EMAIL_NOTIFICATIONS_FROM_NAME}"
+  use_tls: ${EMAIL_NOTIFICATIONS_USE_TLS}
+  
+  developer_recipients:
+    - "${EMAIL_NOTIFICATIONS_DEVELOPER_RECIPIENTS}"
+  
+  client_recipients:
+    - "${EMAIL_NOTIFICATIONS_CLIENT_RECIPIENTS}"
+  
+  alert_cooldown_minutes: ${EMAIL_NOTIFICATIONS_ALERT_COOLDOWN_MINUTES}
+
+# File Tracking
+file_tracking:
+  backup_processed_files: ${FILE_TRACKING_BACKUP_PROCESSED_FILES}
+  cleanup_temp_files: ${FILE_TRACKING_CLEANUP_TEMP_FILES}
+  max_file_age_days: ${FILE_TRACKING_MAX_FILE_AGE_DAYS}
+
+# Logging Configuration
+logging:
+  level: "${LOGGING_LEVEL}"
+  log_file: "${LOGGING_LOG_FILE}"
+  max_log_size_mb: ${LOGGING_MAX_LOG_SIZE_MB}
+  backup_count: ${LOGGING_BACKUP_COUNT}
+  console_output: ${LOGGING_CONSOLE_OUTPUT}
+  
+# Error Handling
+error_handling:
+  max_file_retries: ${ERROR_HANDLING_MAX_FILE_RETRIES}
+  retry_delay_minutes: ${ERROR_HANDLING_RETRY_DELAY_MINUTES}
+  continue_on_error: ${ERROR_HANDLING_CONTINUE_ON_ERROR}
+  save_failed_files_list: ${ERROR_HANDLING_SAVE_FAILED_FILES_LIST}
+  failed_files_log: "${ERROR_HANDLING_FAILED_FILES_LOG}"
+
+# Performance Tuning
+performance:
+  chunk_size_bytes: ${PERFORMANCE_CHUNK_SIZE_BYTES}
+  connection_pool_size: ${PERFORMANCE_CONNECTION_POOL_SIZE}
+  enable_compression: ${PERFORMANCE_ENABLE_COMPRESSION}
+  prefetch_files: ${PERFORMANCE_PREFETCH_FILES}
+
+olmocr_deepinfra:
+  api_key: "${OLMOCR_DEEPINFRA_API_KEY}"
+  model: "${OLMOCR_DEEPINFRA_MODEL}"
+  timeout: ${OLMOCR_DEEPINFRA_TIMEOUT}
+  max_tokens: ${OLMOCR_DEEPINFRA_MAX_TOKENS}
+
+qwenocr_deepinfra:
+  api_key: "${QWENOCR_DEEPINFRA_API_KEY}"
+  model: "${QWENOCR_DEEPINFRA_MODEL}"
+  timeout: ${QWENOCR_DEEPINFRA_TIMEOUT}
+  max_tokens: ${QWENOCR_DEEPINFRA_MAX_TOKENS}
+
+chandra_datalab:
+  api_key: "${CHANDRA_DATALAB_API_KEY}"
+  output_format: "${CHANDRA_DATALAB_OUTPUT_FORMAT}"
+  mode: "${CHANDRA_DATALAB_MODE}"
+  timeout: ${CHANDRA_DATALAB_TIMEOUT}
+  poll_interval: ${CHANDRA_DATALAB_POLL_INTERVAL}
+  max_retries: ${CHANDRA_DATALAB_MAX_RETRIES}
+
+# Conditional keys Validation Configuration
+benz_validation:
+  enabled: ${BENZ_VALIDATION_ENABLED}
+  email_notifications:
+    enabled: ${BENZ_VALIDATION_EMAIL_NOTIFICATIONS_ENABLED}
+    smtp_server: "${BENZ_VALIDATION_EMAIL_NOTIFICATIONS_SMTP_SERVER}"
+    smtp_port: ${BENZ_VALIDATION_EMAIL_NOTIFICATIONS_SMTP_PORT}
+    sender_email: "${BENZ_VALIDATION_EMAIL_NOTIFICATIONS_SENDER_EMAIL}"
+    recipient_email: "${BENZ_VALIDATION_EMAIL_NOTIFICATIONS_RECIPIENT_EMAIL}"
+    smtp_username: "${BENZ_VALIDATION_EMAIL_NOTIFICATIONS_SMTP_USERNAME}"
+    smtp_password: "${BENZ_VALIDATION_EMAIL_NOTIFICATIONS_SMTP_PASSWORD}"
+
+gemini:
+  api_key: "${GEMINI_OVERRIDE_API_KEY}"
+  model: "${GEMINI_OVERRIDE_MODEL}"
+  timeout_seconds: ${GEMINI_OVERRIDE_TIMEOUT_SECONDS}
+  max_retries: ${GEMINI_OVERRIDE_MAX_RETRIES}
+  retry_delay_seconds: ${GEMINI_OVERRIDE_RETRY_DELAY_SECONDS}
+  temperature: ${GEMINI_OVERRIDE_TEMPERATURE}
+  max_tokens: ${GEMINI_OVERRIDE_MAX_TOKENS}
+  
+  # Gemini 2.0 Flash configuration (for content =25K chars)
+  gemini_2_0_flash:
+    temperature: ${GEMINI_2_0_FLASH_TEMPERATURE}
+    max_tokens: ${GEMINI_2_0_FLASH_MAX_TOKENS}
+    timeout_seconds: ${GEMINI_2_0_FLASH_TIMEOUT_SECONDS}
+  
+  # Gemini 2.5 Flash configuration (for content >25K chars)
+  gemini_2_5_flash:
+    temperature: ${GEMINI_2_5_FLASH_TEMPERATURE}
+    max_tokens: ${GEMINI_2_5_FLASH_MAX_TOKENS}
+    timeout_seconds: ${GEMINI_2_5_FLASH_TIMEOUT_SECONDS}
+
+qwen:
+  api_key: "${QWEN_API_KEY}"
+  model: "${QWEN_MODEL}"
+  timeout: ${QWEN_TIMEOUT}
+  temperature: ${QWEN_TEMPERATURE}
+  max_tokens: ${QWEN_MAX_TOKENS}
+  max_retries: ${QWEN_MAX_RETRIES}
+  retry_delay_seconds: ${QWEN_RETRY_DELAY_SECONDS}

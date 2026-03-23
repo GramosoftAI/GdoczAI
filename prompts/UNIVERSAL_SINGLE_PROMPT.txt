@@ -1,0 +1,593 @@
+You are analyzing a COMPLETE DOCUMENT that is NOT split into chunks.
+
+=== DOCUMENT TYPE ===
+<<DOCUMENT_TYPE>>
+
+=== DOCUMENT CONTENT ===
+<<MARKDOWN_CONTENT>>
+
+Your task: Extract ALL structured data from the ENTIRE document in a comprehensive JSON format based on the detected document type.
+
+## AUTO-DETECT DOCUMENT TYPE:
+
+Analyze the complete content and identify the document type:
+- **Invoice/Bill**: Invoice numbers, line items, amounts, taxes, payment details
+- **Certificate**: Certification details, issuer, recipient, credentials, signatures
+- **Ticket**: Booking details, passenger info, journey/event details, pricing
+- **Story/Book**: Narrative text, chapters, paragraphs, dialogue, descriptions
+- **Technical Document**: Code, specifications, API docs, technical instructions
+- **Report**: Executive summary, analysis, findings, data, conclusions
+- **Form**: Input fields, checkboxes, instructions, sections
+- **Legal Document**: Clauses, terms, agreements, legal language
+- **Resume/CV**: Work experience, education, skills, personal information
+- **Receipt**: Transaction details, items purchased, payment method
+- **Contract**: Parties, terms, obligations, signatures
+- **Medical Document**: Patient info, diagnosis, prescriptions, test results
+- **Academic**: Research paper, thesis, study materials, assignments
+- **Presentation**: Slides, bullet points, visual content descriptions
+- **Email**: Sender, recipient, subject, body, attachments
+- **Other**: General document with mixed content types
+
+## UNIVERSAL OUTPUT FORMAT:
+
+```json
+{
+  "document_analysis": {
+    "detected_type": "primary document type",
+    "sub_type": "specific category (optional)",
+    "confidence_score": "high/medium/low",
+    "language": "primary language",
+    "page_count": "estimated pages",
+    "has_tables": true/false,
+    "has_lists": true/false,
+    "has_images": true/false,
+    "has_code": true/false,
+    "has_signatures": true/false,
+    "structure_complexity": "simple/medium/complex"
+  },
+  "header_information": {},
+  "tables": [],
+  "key_value_pairs": {},
+  "lists": {},
+  "code_blocks": [],
+  "narrative_sections": [],
+  "metadata_fields": {},
+  "footer_information": {},
+  "raw_content": {
+    "markdown": "complete original markdown",
+    "extracted_text": "clean extracted text"
+  }
+}
+```
+
+## DOCUMENT-SPECIFIC EXTRACTION GUIDES:
+
+### 1. INVOICE/BILL:
+```json
+{
+  "header_information": {
+    "invoice_number": "",
+    "invoice_date": "",
+    "due_date": "",
+    "company": {
+      "name": "",
+      "address": "",
+      "gstin": "",
+      "pan": "",
+      "contact": {}
+    },
+    "customer": {
+      "name": "",
+      "address": "",
+      "gstin": "",
+      "pan": "",
+      "contact": {}
+    }
+  },
+  "tables": [
+    {
+      "table_type": "line_items",
+      "category": "LABOUR/PARTS/SUBLET/PRODUCTS",
+      "headers": ["Item", "Description", "Qty", "Rate", "Amount", "Tax"],
+      "rows": []
+    }
+  ],
+  "metadata_fields": {
+    "subtotal": "",
+    "tax_breakdown": {
+      "cgst": "",
+      "sgst": "",
+      "igst": "",
+      "utgst": ""
+    },
+    "total_amount": "",
+    "amount_in_words": "",
+    "payment_terms": "",
+    "bank_details": {}
+  }
+}
+```
+
+### 2. CERTIFICATE:
+```json
+{
+  "header_information": {
+    "certificate_type": "",
+    "certificate_number": "",
+    "issue_date": "",
+    "expiry_date": "",
+    "issuing_authority": {
+      "organization": "",
+      "address": "",
+      "contact": {}
+    }
+  },
+  "key_value_pairs": {
+    "recipient_details": {
+      "name": "",
+      "id_number": "",
+      "email": "",
+      "date_of_birth": ""
+    },
+    "certification_details": {
+      "course_name": "",
+      "grade": "",
+      "completion_date": "",
+      "credits": ""
+    },
+    "verification": {
+      "verification_url": "",
+      "qr_code": ""
+    }
+  },
+  "lists": {
+    "signatories": []
+  }
+}
+```
+
+### 3. TICKET (Travel/Event):
+```json
+{
+  "header_information": {
+    "ticket_number": "",
+    "pnr": "",
+    "booking_date": "",
+    "booking_reference": "",
+    "ticket_type": "flight/train/bus/event"
+  },
+  "key_value_pairs": {
+    "passenger_details": {
+      "name": "",
+      "age": "",
+      "gender": "",
+      "id_type": "",
+      "id_number": "",
+      "contact": {}
+    },
+    "journey_details": {
+      "from": "",
+      "to": "",
+      "departure_date": "",
+      "departure_time": "",
+      "arrival_date": "",
+      "arrival_time": "",
+      "duration": "",
+      "class": "",
+      "seat_number": ""
+    },
+    "fare_details": {
+      "base_fare": "",
+      "taxes": "",
+      "service_charge": "",
+      "total_fare": ""
+    }
+  },
+  "lists": {
+    "terms_and_conditions": [],
+    "baggage_allowance": []
+  }
+}
+```
+
+### 4. STORY/BOOK:
+```json
+{
+  "header_information": {
+    "title": "",
+    "author": "",
+    "chapter": "",
+    "chapter_title": "",
+    "page_number": "",
+    "section": ""
+  },
+  "narrative_sections": [
+    {
+      "section_type": "chapter_opening/paragraph/dialogue/description",
+      "section_number": 1,
+      "content": "",
+      "character": "",
+      "scene_setting": ""
+    }
+  ],
+  "metadata_fields": {
+    "genre": "",
+    "themes": [],
+    "characters_mentioned": [],
+    "locations_mentioned": []
+  }
+}
+```
+
+### 5. TECHNICAL/CODING DOCUMENT:
+```json
+{
+  "header_information": {
+    "document_title": "",
+    "version": "",
+    "author": "",
+    "last_updated": "",
+    "technology_stack": []
+  },
+  "code_blocks": [
+    {
+      "language": "python/javascript/java/etc",
+      "description": "",
+      "code": "",
+      "file_name": "",
+      "line_start": "",
+      "line_end": ""
+    }
+  ],
+  "key_value_pairs": {
+    "api_endpoints": {},
+    "configuration": {},
+    "dependencies": {}
+  },
+  "tables": [
+    {
+      "table_type": "parameters/returns/methods",
+      "headers": ["Parameter", "Type", "Description", "Required"],
+      "rows": []
+    }
+  ],
+  "lists": {
+    "installation_steps": [],
+    "usage_examples": [],
+    "known_issues": []
+  }
+}
+```
+
+### 6. REPORT:
+```json
+{
+  "header_information": {
+    "report_title": "",
+    "report_date": "",
+    "report_period": "",
+    "authors": [],
+    "organization": "",
+    "department": ""
+  },
+  "narrative_sections": [
+    {
+      "section": "executive_summary",
+      "content": ""
+    },
+    {
+      "section": "introduction",
+      "content": ""
+    },
+    {
+      "section": "methodology",
+      "content": ""
+    },
+    {
+      "section": "findings",
+      "content": ""
+    },
+    {
+      "section": "conclusion",
+      "content": ""
+    }
+  ],
+  "tables": [
+    {
+      "table_type": "data_analysis/statistics/comparison",
+      "caption": "",
+      "headers": [],
+      "rows": []
+    }
+  ],
+  "lists": {
+    "key_findings": [],
+    "recommendations": [],
+    "references": []
+  }
+}
+```
+
+### 7. FORM:
+```json
+{
+  "header_information": {
+    "form_number": "",
+    "form_title": "",
+    "version": "",
+    "effective_date": "",
+    "department": ""
+  },
+  "key_value_pairs": {
+    "personal_information": {},
+    "contact_details": {},
+    "address_information": {},
+    "employment_details": {},
+    "educational_background": {},
+    "additional_information": {}
+  },
+  "lists": {
+    "instructions": [],
+    "required_documents": [],
+    "checkbox_options": []
+  },
+  "metadata_fields": {
+    "submission_date": "",
+    "processed_by": "",
+    "status": ""
+  }
+}
+```
+
+### 8. RESUME/CV:
+```json
+{
+  "header_information": {
+    "name": "",
+    "professional_title": "",
+    "contact": {
+      "email": "",
+      "phone": "",
+      "location": "",
+      "linkedin": "",
+      "portfolio": ""
+    },
+    "professional_summary": ""
+  },
+  "lists": {
+    "work_experience": [
+      {
+        "job_title": "",
+        "company": "",
+        "location": "",
+        "duration": "",
+        "responsibilities": [],
+        "achievements": []
+      }
+    ],
+    "education": [
+      {
+        "degree": "",
+        "institution": "",
+        "location": "",
+        "graduation_year": "",
+        "gpa": ""
+      }
+    ],
+    "skills": {
+      "technical_skills": [],
+      "soft_skills": [],
+      "languages": [],
+      "tools": []
+    },
+    "certifications": [],
+    "projects": [],
+    "awards": []
+  }
+}
+```
+
+### 9. RECEIPT:
+```json
+{
+  "header_information": {
+    "receipt_number": "",
+    "transaction_date": "",
+    "transaction_time": "",
+    "merchant": {
+      "name": "",
+      "address": "",
+      "contact": {}
+    }
+  },
+  "tables": [
+    {
+      "table_type": "purchased_items",
+      "headers": ["Item", "Quantity", "Price", "Total"],
+      "rows": []
+    }
+  ],
+  "metadata_fields": {
+    "subtotal": "",
+    "tax": "",
+    "discount": "",
+    "total": "",
+    "payment_method": "",
+    "card_last_4": ""
+  }
+}
+```
+
+### 10. LEGAL/CONTRACT:
+```json
+{
+  "header_information": {
+    "contract_title": "",
+    "contract_number": "",
+    "execution_date": "",
+    "effective_date": "",
+    "expiration_date": ""
+  },
+  "key_value_pairs": {
+    "parties": {
+      "party_a": {},
+      "party_b": {}
+    },
+    "recitals": {},
+    "definitions": {}
+  },
+  "narrative_sections": [
+    {
+      "clause_number": "",
+      "clause_title": "",
+      "content": ""
+    }
+  ],
+  "lists": {
+    "obligations": [],
+    "terms_and_conditions": [],
+    "signatures": []
+  }
+}
+```
+
+## UNIVERSAL EXTRACTION RULES:
+
+### 1. COMPREHENSIVE TABLE EXTRACTION:
+- Detect ALL tables regardless of format
+- Extract headers (even multi-row headers)
+- Capture all data rows
+- Handle merged cells
+- Preserve column alignment
+- Note table caption/title
+- Include table context (section it belongs to)
+
+### 2. INTELLIGENT KEY-VALUE DETECTION:
+Recognize these patterns:
+- `Field: Value`
+- `Field | Value`
+- `Field - Value`
+- `Field = Value`
+- `**Field** Value`
+- Form fields with labels
+- Definition lists
+- Metadata pairs
+
+### 3. LIST EXTRACTION:
+Detect all list types:
+- Unordered (Â•, -, *, ?, ?, ?)
+- Ordered (1., 2., a., b., i., ii., I., II.)
+- Checkboxes (?, ?, ?, ?, [x], [ ])
+- Multi-level nested lists
+- Definition/description lists
+- Maintain hierarchy and order
+
+### 4. CODE & SYNTAX BLOCKS:
+Identify:
+- Programming code (all languages)
+- SQL queries
+- Configuration (JSON, YAML, XML, TOML)
+- Shell/command-line scripts
+- Markup (HTML, LaTeX, Markdown)
+- Extract language identifier
+- Preserve indentation and formatting
+
+### 5. NARRATIVE TEXT PROCESSING:
+- Identify paragraphs and sections
+- Preserve reading order
+- Maintain section hierarchy
+- Note heading levels
+- Extract inline formatting cues
+- Preserve paragraph breaks
+
+### 6. SPECIAL ELEMENT DETECTION:
+- Signatures (textual references)
+- Stamps/seals (mentioned)
+- Dates (extract and normalize)
+- Amounts/currency (with symbols)
+- Contact info (email, phone, URLs)
+- References/citations
+- Footnotes/endnotes
+- Hyperlinks
+
+## DATA CLEANING & NORMALIZATION:
+
+### For All Documents:
+- **Remove OCR artifacts**: Fix word breaks, extra spaces
+- **Missing values**: Use "null" (string) consistently
+- **Dates**: Preserve original format, note in metadata
+- **Numbers**: Use appropriate type (string for IDs, number for amounts)
+- **Currency**: Keep symbol with amount (e.g., "?1,234.56")
+- **Phone numbers**: Preserve format (e.g., "+91-9876543210")
+- **Emails**: Lowercase, validate format
+- **URLs**: Complete and properly formatted
+- **Special characters**: Preserve unless OCR error
+- **Line breaks**: Use \n for multi-line content
+- **Whitespace**: Remove excessive, preserve intentional
+
+### Field Naming Convention:
+- Use `underscore_case` consistently
+- Be descriptive but concise
+- Avoid abbreviations unless standard
+- Group related fields logically
+- Use consistent prefixes for similar data
+
+## CONTEXTUAL INTELLIGENCE:
+
+### Pattern Recognition:
+- **?, $, Â€** + numbers ? Financial document
+- **PNR, seat, journey** ? Travel ticket
+- **Certified that, hereby** ? Certificate
+- **def, function, class, import** ? Code document
+- **Chapter, paragraph, dialogue** ? Story/book
+- **Whereas, party, agreement** ? Legal contract
+- **Patient, diagnosis, prescription** ? Medical
+- **Abstract, methodology, references** ? Academic
+
+### Document Structure Analysis:
+- **Header**: Title, logos, document numbers
+- **Body**: Main content (varies by type)
+- **Footer**: Page numbers, disclaimers, signatures
+- **Sidebar**: Additional notes, references
+- **Metadata**: Document properties, timestamps
+
+## QUALITY ASSURANCE:
+
+### Before Returning JSON:
+- [ ] Document type correctly identified
+- [ ] ALL visible content extracted
+- [ ] No data hallucinated/invented
+- [ ] Structure logically organized
+- [ ] Field names consistent (underscore_case)
+- [ ] Data types appropriate
+- [ ] Missing values = "null" (string)
+- [ ] Numbers in correct format
+- [ ] Dates preserved accurately
+- [ ] Tables complete with all rows
+- [ ] Lists maintain order
+- [ ] Raw markdown included
+- [ ] Valid JSON syntax
+- [ ] No trailing commas
+- [ ] Proper escaping of special characters
+
+## OUTPUT REQUIREMENTS:
+
+? **ONLY** return the JSON object
+? **NO** markdown code fences (```)
+? **NO** explanations or commentary
+? **NO** prefix/suffix text
+? **VALID** JSON syntax
+? **COMPLETE** data extraction
+? **STRUCTURED** organization
+? **ACCURATE** content
+
+## SPECIAL INSTRUCTIONS:
+
+1. **Be Exhaustive**: Extract everything visible in the document
+2. **Be Accurate**: Only extract what's actually present
+3. **Be Organized**: Structure data logically by document type
+4. **Be Consistent**: Use same patterns across similar documents
+5. **Be Smart**: Adapt structure to document complexity
+6. **Be Precise**: Maintain data integrity and relationships
+
+Return ONLY the JSON object. No explanations. No markdown code blocks. Just pure JSON.

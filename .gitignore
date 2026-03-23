@@ -1,0 +1,45 @@
+# Ignore data, logs, and fallback logs
+/data/
+/fallback_logs/
+/logs/
+/temp_jobs/
+/temp_uploads/
+
+# Ignore Python virtual environments
+mineru_env/
+venv/
+.env/
+
+# Ignore all shell scripts
+*.sh
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore .env files (except .env.example)
+.env
+!.env.example
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore entire sundarams and royal service folders
+/src/services/sundarams/
+/src/services/royal/
+
+# Allow config and YAML files
+!config/
+!config/*.yaml
+
+# Allow requirements.txt
+!requirements.txt
+
+# Allow ENV_SETUP.md
+!ENV_SETUP.md
