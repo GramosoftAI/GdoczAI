@@ -142,7 +142,7 @@ Local filesystem or AWS S3. Date-based organization, original PDF preservation, 
 
 ### 🔧 Core Components
 
-<div align="center">
+<div align="left">
 
 | Component | Purpose | Tech Stack |
 |-----------|---------|-----------|
@@ -342,7 +342,7 @@ psql -U postgres -d gdocz_db -c "\dt"
 
 ## 📚 API Endpoints
 
-<div align="center">
+<div align="left">
 
 ### 🔐 Authentication
 | Method | Endpoint | Description |
@@ -535,7 +535,7 @@ retry_delay_seconds: 5
 
 ### 📊 OCR Model Routing Strategy
 
-<table align="center">
+<table align="">
   <tr>
     <th>Document Size</th>
     <th>Model Selected</th>
@@ -814,7 +814,7 @@ git push origin feature/YourFeature
 
 ## 📄 License
 
-<div align="center">
+<div align="left">
 
 **GDocZ** is released under the **MIT License** 📜
 
@@ -835,15 +835,15 @@ obtaining a copy of this software...
 
 ## 👥 Team & Authors
 
-<div align="center">
+<div align="left">
 
 Built with ❤️ by **Gramosoft Private Limited**
 
 | 👤 | Role | Name |
 |:-:|------|------|
+| <b>👨‍💼</b> | **Team Lead** | Rajesh Kannan M |
 | <b>🧠</b> | **GenAI/ML Developer** | Ramkumar S |
 | <b>🔧</b> | **GenAI Developer (Supporting)** | Girinath R |
-| <b>👨‍💼</b> | **Team Lead** | Rajesh Kannan M |
 
 </div>
 
@@ -875,7 +875,7 @@ Data validation
 
 ## 📞 Support & Contact
 
-<div align="center">
+<div align="left">
 
 | 🌐 | 🚀 | 📧 | 🐛 | 💬 |
 |---|---|---|---|---|
@@ -893,7 +893,7 @@ Data validation
 
 ## 🌟 Show Your Support
 
-<div align="center">
+<div align="left">
 
 If GDocZ saves you time and frustration, please **⭐ star this repository**!  
 It helps others discover the project and motivates us to keep improving.
