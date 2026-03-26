@@ -258,20 +258,89 @@ class ChandraProcessor:
         return None
 
     # ------------------------------------------------------------------
+    # INTERNAL: extract page-wise content from JSON poll response
+    # ------------------------------------------------------------------
+    def _extract_content_from_json(self, poll_response):
+        """
+        Parses the 'json' field of the Datalab Marker response and returns
+        page-wise content with <---- Page N ----> headers.
+
+        Each top-level child in json['children'] represents one page
+        (block_type == 'Page'). The page index is read from the child's 'id'
+        field (e.g. '/page/0/Page/0' -> page 0) and incremented by 1 so that
+        page headers are 1-based (Page 1, Page 2, ...).
+
+        Returns:
+            (content_str, page_count)
+        """
+        json_data = poll_response.get("json")
+
+        if not json_data or not isinstance(json_data, dict):
+            logger.warning(
+                "[WARN] JSON output_format requested but 'json' key missing "
+                "in poll response - falling back to html/markdown"
+            )
+            content = poll_response.get("html") or poll_response.get("markdown") or ""
+            page_count = poll_response.get("pages") or poll_response.get("page_count") or 1
+            return content, int(page_count)
+
+        pages = json_data.get("children", [])
+
+        if not pages:
+            logger.warning("[WARN] JSON response contains no page children")
+            content = poll_response.get("html") or poll_response.get("markdown") or ""
+            page_count = poll_response.get("pages") or poll_response.get("page_count") or 1
+            return content, int(page_count)
+
+        parts = []
+        for idx, page_block in enumerate(pages):
+            # Derive page number from id like '/page/0/Page/0', else use idx
+            page_num = idx
+            block_id = page_block.get("id", "")
+            try:
+                # id format: /page/<N>/Page/<M>  -> use N (0-based)
+                segment = block_id.split("/")
+                if len(segment) >= 3:
+                    page_num = int(segment[2])
+            except Exception:
+                page_num = idx
+
+            # Convert 0-based page index to 1-based page number
+            page_num = page_num + 1
+
+            page_html = page_block.get("html", "").strip()
+
+            parts.append("<---- Page {} ---->".format(page_num))
+            if page_html:
+                parts.append(page_html)
+            else:
+                parts.append("<!-- empty page -->")
+            parts.append("")  # blank line between pages
+
+        content    = "\n".join(parts).strip()
+        page_count = len(pages)
+
+        logger.info("[OK]  JSON page-wise extraction: %s pages, %s chars",
+                    page_count, len(content))
+        return content, page_count
+
+    # ------------------------------------------------------------------
     # INTERNAL: extract content from completed poll response
     # ------------------------------------------------------------------
     def _extract_content(self, poll_response):
+        quality = poll_response.get("parse_quality_score")
+        if quality is not None:
+            logger.info("[OK]  Datalab parse_quality_score = %s", quality)
+
+        if self.output_format == "json":
+            return self._extract_content_from_json(poll_response)
+
         if self.output_format == "html":
             content = poll_response.get("html") or poll_response.get("markdown") or ""
         else:
             content = poll_response.get("markdown") or poll_response.get("html") or ""
 
         page_count = poll_response.get("pages") or poll_response.get("page_count") or 1
-
-        quality = poll_response.get("parse_quality_score")
-        if quality is not None:
-            logger.info("[OK]  Datalab parse_quality_score = %s", quality)
-
         return content, int(page_count)
 
     # ------------------------------------------------------------------
