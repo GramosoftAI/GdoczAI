@@ -58,13 +58,13 @@
 Intelligently routes documents to the best-fit engine (OlmOCR for speed, Qwen for charts, Gemini for complex layouts)<br>based on document size and complexity.
 
 #### 📄 **Cross-Page Intelligence**
-Extract data that spans multiple pages—invoices split across sheets, contracts with continuation pages, multi-page forms. <br>GDocZ understands document flow.
+Extract data that spans multiple pages—invoices split across sheets, contracts with continuation pages, multi-page <br>forms.GDocZ understands document flow.
       
 #### 🧠 **Schema-Driven Extraction**
-Define what you want to extract once using intuitive schema definitions. Supports nested objects, arrays, and complex hierarchies.
+Define what you want to extract once using intuitive schema definitions. Supports nested objects, arrays, and<br>complex hierarchies.
 
 #### 📧 **Automated Ingestion**
-SMTP/IMAP email monitoring, SFTP file fetching, webhook notifications. Documents arrive, processing begins automatically.
+SMTP/IMAP email monitoring, SFTP file fetching, webhook notifications. Documents arrive, processing begins<br>automatically.
       
 #### 🔐 **Enterprise Ready**
 JWT authentication, API keys, rate limiting, multi-user support, audit logs, and full error recovery.
