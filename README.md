@@ -55,10 +55,10 @@
     <td width="50%">
       
 #### 🎯 **Multi-Model OCR Harmony**
-Intelligently routes documents to the best-fit engine (OlmOCR for speed, Qwen for charts, Gemini for complex layouts)<br>based on document size and complexity.
+Intelligently routes documents to the best-fit engine (OlmOCR for speed, Qwen for charts, Gemini for complex layouts)<br>based on document size and complexity.    
 
 #### 📄 **Cross-Page Intelligence**
-Extract data that spans multiple pages—invoices split across sheets, contracts with continuation pages, multi-page <br>forms.GDocZ understands document flow.
+Extract data that spans multiple pages—invoices split across sheets, contracts with continuation pages, multi-page <br>forms.GDocZ understands document flow.        
       
 #### 🧠 **Schema-Driven Extraction**
 Define what you want to extract once using intuitive schema definitions. Supports nested objects, arrays, and<br>complex hierarchies.
