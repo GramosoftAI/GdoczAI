@@ -81,7 +81,7 @@ Local filesystem or AWS S3. Date-based organization, original PDF preservation, 
 | 🧠 | 📄 | ⚡ |
 |---|---|---|
 | **Multi-Engine OCR** | **Schema-Based Extraction** | **Intelligent Chunking** |
-| OlmOCR, Qwen2.5-7B VL,  <br> Gemini 2.0/2.5, Chandra with intelligent routing | Recursive schema definitions <br> for complex nested data structures | Auto <br>segmentation  + manual splitting for edge cases |
+| OlmOCR, Qwen2.5-7B VL,  <br> Gemini 2.0/2.5, Chandra with intelligent routing | Recursive schema definitions <br> for complex nested data structures | Auto segmentation  + manual<br> splitting for edge cases |
 
 | 📧 | 🌐 | 🔐 |
 |---|---|---|
