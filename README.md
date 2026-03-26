@@ -830,21 +830,7 @@ obtaining a copy of this software...
 
 </div>
 
----
 
-## 👥 Team & Authors
-
-<div align="left">
-
-Built with ❤️ by **Gramosoft Private Limited**
-
-| 👤 | Role | Name |
-|:-:|------|------|
-| <b>👨‍💼</b> | **Team Lead** | Rajesh Kannan M |
-| <b>🧠</b> | **GenAI/ML Developer** | Ramkumar S |
-| <b>🔧</b> | **GenAI Developer (Supporting)** | Girinath R |
-
-</div>
 
 ---
 
