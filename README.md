@@ -86,7 +86,7 @@ Local filesystem or AWS S3. Date-based organization, original PDF preservation, 
 | 📧 | 🌐 | 🔐 |
 |---|---|---|
 | **Email Integration** | **Dual Storage** | **JWT Security** |
-| SMTP/IMAP monitoring for automatic document<br> ingestion | Local FS or AWS S3 with date-based <br> organization | Secure API with token <br>refresh & API keys |
+| SMTP/IMAP monitoring for automatic<br> document ingestion | Local FS or AWS S3 with date-based <br> organization | Secure API with token <br>refresh & API keys |
 
 | 🔄 | 🔔 | 📊 |
 |---|---|---|
