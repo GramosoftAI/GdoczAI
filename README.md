@@ -76,22 +76,22 @@ Local filesystem or AWS S3. Date-based organization, original PDF preservation, 
 
 ## ✨ Key Features
 
-<div align="center">
+<div align="start">
 
 | 🧠 | 📄 | ⚡ |
 |---|---|---|
 | **Multi-Engine OCR** | **Schema-Based Extraction** | **Intelligent Chunking** |
-| OlmOCR, Qwen2.5-7B VL, Gemini 2.0/2.5, Chandra with intelligent routing | Recursive schema definitions for complex nested data structures | Auto segmentation + manual splitting for edge cases |
+| OlmOCR, Qwen2.5-7B VL,  <br> Gemini 2.0/2.5, Chandra with intelligent routing | Recursive schema definitions <br> for complex nested data structures | Auto segmentation <br> + manual splitting for edge cases |
 
 | 📧 | 🌐 | 🔐 |
 |---|---|---|
 | **Email Integration** | **Dual Storage** | **JWT Security** |
-| SMTP/IMAP monitoring for automatic document ingestion | Local FS or AWS S3 with date-based organization | Secure API with token refresh & API keys |
+| SMTP/IMAP monitoring for automatic document ingestion | Local FS or AWS S3 with date-based <br> organization | Secure API with token <br>refresh & API keys |
 
 | 🔄 | 🔔 | 📊 |
 |---|---|---|
 | **Conflict Resolution** | **Webhooks** | **Field Validation** |
-| Multi-model result merging with confidence scoring | Real-time processing notifications | Schema-based validation with null handling |
+| Multi-model result merging with confidence <br> scoring | Real-time processing notifications | Schema-based validation with null <br>handling |
 
 | 🚀 | 📋 | 🔍 |
 |---|---|---|
@@ -99,7 +99,6 @@ Local filesystem or AWS S3. Date-based organization, original PDF preservation, 
 | Asynchronous jobs with priority queues | Rotating logs, error tracking, audit trails | Seamless multi-page data extraction |
 
 </div>
-
 <br>
 
 ---
