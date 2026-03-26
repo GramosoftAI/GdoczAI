@@ -91,7 +91,7 @@ Local filesystem or AWS S3. Date-based organization, original PDF preservation, 
 | 🔄 | 🔔 | 📊 |
 |---|---|---|
 | **Conflict Resolution** | **Webhooks** | **Field Validation** |
-| Multi-model result merging with confidence <br> scoring | Real-time processing notifications | Schema-based validation with null <br>handling |
+| Multi-model result merging with confidence <br> scoring | Real-time processing notifications | Schema-based <br>validation with null handling |
 
 | 🚀 | 📋 | 🔍 |
 |---|---|---|
