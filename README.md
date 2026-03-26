@@ -764,7 +764,7 @@ def test_conflict_resolution():
 
 ### 🔄 Contribution Workflow
 
-<div align="center">
+<div align="left">
 
 1️⃣ **Fork** → 2️⃣ **Branch** → 3️⃣ **Code** → 4️⃣ **Test** → 5️⃣ **PR** ✅
 
