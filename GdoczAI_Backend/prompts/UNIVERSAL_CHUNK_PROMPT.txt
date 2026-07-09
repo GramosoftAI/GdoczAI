@@ -1,0 +1,378 @@
+You are analyzing a CHUNK of a document that was split by Chonkie (RecursiveChunker).
+
+This is chunk {chunk_num} of {total_chunks}.
+
+=== DOCUMENT TYPE ===
+<<DOCUMENT_TYPE>>
+
+=== DOCUMENT CONTENT ===
+<<MARKDOWN_CONTENT>>
+
+Your task: Extract ALL structured data from this chunk based on the document type in a comprehensive JSON format.
+
+## AUTO-DETECT DOCUMENT TYPE:
+
+Analyze the content and identify the document type from these categories:
+- **Invoice/Bill**: Contains invoice numbers, amounts, GST, line items
+- **Certificate**: Contains certification details, issuer, recipient, credentials
+- **Ticket**: Contains booking details, passenger info, journey details
+- **Story/Book**: Contains narrative text, chapters, paragraphs
+- **Technical Document**: Contains code, specifications, technical details
+- **Report**: Contains analysis, findings, data, conclusions
+- **Form**: Contains fields to fill, checkboxes, form structure
+- **Legal Document**: Contains clauses, terms, legal language
+- **Resume/CV**: Contains work experience, education, skills
+- **Other**: General document with mixed content
+
+## UNIVERSAL OUTPUT FORMAT:
+
+```json
+{
+  "document_metadata": {
+    "detected_type": "detected document type",
+    "chunk_id": "{chunk_num}",
+    "total_chunks": {total_chunks},
+    "confidence": "high/medium/low",
+    "content_sections": ["section1", "section2"],
+    "has_tables": true/false,
+    "has_lists": true/false,
+    "has_key_value_pairs": true/false,
+    "has_narrative_text": true/false,
+    "has_code_blocks": true/false,
+    "has_images_references": true/false
+  },
+  "structured_data": {
+    "header_information": {},
+    "tables": [],
+    "key_value_pairs": {},
+    "lists": [],
+    "code_blocks": [],
+    "narrative_text": [],
+    "metadata_fields": {}
+  },
+  "raw_content": {
+    "markdown": "original markdown content",
+    "extracted_text": "clean text without formatting"
+  }
+}
+```
+
+## DOCUMENT-SPECIFIC EXTRACTION PATTERNS:
+
+### 1. INVOICE/BILL DOCUMENTS:
+Extract:
+- **Header**: Company details, customer details, invoice number, date
+- **Line Items Table**: Description, quantity, rate, amount, tax
+- **Summary**: Subtotal, taxes (CGST, SGST, IGST), total amount
+- **Payment Info**: Payment terms, bank details, due date
+
+Structure:
+```json
+{
+  "header_information": {
+    "company": {},
+    "customer": {},
+    "invoice_details": {},
+    "vehicle_details": {}  // if applicable
+  },
+  "tables": [
+    {
+      "table_type": "line_items",
+      "category": "LABOUR/PARTS/SUBLET",
+      "headers": [],
+      "rows": []
+    }
+  ],
+  "metadata_fields": {
+    "totals": {},
+    "taxes": {},
+    "payment_info": {}
+  }
+}
+```
+
+### 2. CERTIFICATE DOCUMENTS:
+Extract:
+- **Header**: Issuing organization, logo, certificate title
+- **Recipient Info**: Name, ID, email, address
+- **Certification Details**: Course/achievement, date, certificate number
+- **Signatures**: Authorized signatories, seals
+- **Validity**: Issue date, expiry date (if applicable)
+
+Structure:
+```json
+{
+  "header_information": {
+    "issuer": {},
+    "certificate_type": "",
+    "certificate_number": ""
+  },
+  "key_value_pairs": {
+    "recipient": {},
+    "certification_details": {},
+    "signatures": {}
+  }
+}
+```
+
+### 3. TICKET DOCUMENTS (Travel/Event):
+Extract:
+- **Booking Info**: Ticket number, booking date, PNR
+- **Passenger/Attendee**: Name, age, ID, contact
+- **Journey/Event Details**: From-to, date-time, seat/section
+- **Fare/Price Breakdown**: Base fare, taxes, total
+- **Terms**: Cancellation policy, baggage allowance
+
+Structure:
+```json
+{
+  "header_information": {
+    "ticket_number": "",
+    "booking_reference": "",
+    "booking_date": ""
+  },
+  "key_value_pairs": {
+    "passenger_details": {},
+    "journey_details": {},
+    "fare_breakdown": {}
+  },
+  "lists": {
+    "terms_and_conditions": []
+  }
+}
+```
+
+### 4. STORY/BOOK DOCUMENTS:
+Extract:
+- **Metadata**: Title, author, chapter, page number
+- **Content**: Paragraphs, dialogue, descriptions
+- **Structure**: Chapters, sections, subsections
+- **Special Elements**: Quotes, footnotes, references
+
+Structure:
+```json
+{
+  "header_information": {
+    "title": "",
+    "author": "",
+    "chapter": "",
+    "page_number": ""
+  },
+  "narrative_text": [
+    {
+      "section": "chapter_1",
+      "paragraph_number": 1,
+      "content": "",
+      "type": "narrative/dialogue/description"
+    }
+  ]
+}
+```
+
+### 5. TECHNICAL/CODING DOCUMENTS:
+Extract:
+- **Header**: Document title, version, author, date
+- **Code Blocks**: Language, code snippets, syntax
+- **Explanations**: Documentation, comments, notes
+- **Diagrams**: References to figures, flowcharts
+- **API/Functions**: Method signatures, parameters, returns
+
+Structure:
+```json
+{
+  "header_information": {
+    "title": "",
+    "version": "",
+    "author": "",
+    "last_updated": ""
+  },
+  "code_blocks": [
+    {
+      "language": "",
+      "code": "",
+      "line_numbers": "",
+      "description": ""
+    }
+  ],
+  "key_value_pairs": {
+    "functions": {},
+    "classes": {},
+    "variables": {}
+  }
+}
+```
+
+### 6. REPORT DOCUMENTS:
+Extract:
+- **Cover**: Title, author, date, organization
+- **Executive Summary**: Key findings, recommendations
+- **Sections**: Introduction, methodology, analysis, conclusion
+- **Data**: Tables, charts, statistics
+- **References**: Citations, bibliography
+
+Structure:
+```json
+{
+  "header_information": {
+    "report_title": "",
+    "report_date": "",
+    "authors": [],
+    "organization": ""
+  },
+  "narrative_text": [
+    {
+      "section": "executive_summary",
+      "content": ""
+    }
+  ],
+  "tables": [],
+  "lists": {
+    "key_findings": [],
+    "recommendations": []
+  }
+}
+```
+
+### 7. FORM DOCUMENTS:
+Extract:
+- **Form Header**: Form number, title, version
+- **Fields**: Input fields, checkboxes, dropdowns
+- **Instructions**: How to fill, guidelines
+- **Sections**: Grouped fields by category
+
+Structure:
+```json
+{
+  "header_information": {
+    "form_number": "",
+    "form_title": "",
+    "version": ""
+  },
+  "key_value_pairs": {
+    "personal_information": {},
+    "address_details": {},
+    "additional_fields": {}
+  },
+  "lists": {
+    "instructions": [],
+    "required_documents": []
+  }
+}
+```
+
+### 8. RESUME/CV DOCUMENTS:
+Extract:
+- **Personal Info**: Name, contact, email, location
+- **Summary**: Professional summary, objective
+- **Experience**: Job title, company, duration, responsibilities
+- **Education**: Degree, institution, year
+- **Skills**: Technical skills, soft skills, certifications
+
+Structure:
+```json
+{
+  "header_information": {
+    "name": "",
+    "contact": {},
+    "professional_summary": ""
+  },
+  "lists": {
+    "work_experience": [],
+    "education": [],
+    "skills": [],
+    "certifications": []
+  }
+}
+```
+
+## UNIVERSAL EXTRACTION RULES:
+
+### 1. ADAPTIVE TABLE DETECTION:
+- Detect ANY tabular structure (regardless of content)
+- Extract headers dynamically
+- Handle merged cells, nested headers
+- Preserve column relationships
+- Convert to consistent JSON format
+
+### 2. KEY-VALUE PAIR DETECTION:
+Patterns to recognize:
+- "Field: Value"
+- "Field | Value"
+- "Field - Value"
+- "Field = Value"
+- Form-style fields
+- Labeled data points
+
+### 3. LIST DETECTION:
+- Bullet points (Â•, -, *, ?)
+- Numbered lists (1., a., i., etc.)
+- Checkboxes (?, ?, ?, ?)
+- Multi-level lists
+- Definition lists
+
+### 4. NARRATIVE TEXT HANDLING:
+- Preserve paragraph structure
+- Maintain reading order
+- Keep section associations
+- Identify text type (narrative, technical, legal, etc.)
+
+### 5. CODE BLOCK DETECTION:
+- Programming languages (Python, JavaScript, Java, etc.)
+- SQL queries
+- Configuration files (JSON, YAML, XML)
+- Command-line instructions
+- Markup languages (HTML, Markdown)
+
+## DATA CLEANING RULES:
+
+- **Missing Values**: Use "null" string for missing data
+- **Numbers**: Keep as appropriate type (string for IDs, number for amounts)
+- **Dates**: Preserve original format, note format in metadata
+- **Addresses**: Keep multi-line with \n preserved
+- **Phone/Email**: Standardize format but preserve original
+- **Currency**: Keep symbol with amount
+- **Special Characters**: Preserve unless clearly OCR error
+- **Whitespace**: Remove excessive, preserve intentional
+
+## CHUNKING AWARENESS:
+
+For multi-chunk documents:
+- **First Chunk**: Usually contains header/title information
+- **Middle Chunks**: Contains main content (tables, text, lists)
+- **Last Chunk**: Often contains summary, totals, signatures
+- **Continuity**: Mark if content continues from previous or to next chunk
+
+## CONTEXTUAL HINTS:
+
+Use these patterns to identify content:
+- **Amounts with currency symbols** ? Financial document
+- **Dates with journey details** ? Ticket/booking
+- **"Certified that"** ? Certificate
+- **Code syntax (def, function, class)** ? Technical document
+- **Chapters, paragraphs** ? Book/story
+- **Clauses, whereas, hereby** ? Legal document
+- **Experience, education, skills** ? Resume
+
+## QUALITY CHECKLIST:
+
+- [ ] Document type correctly identified
+- [ ] All visible content extracted
+- [ ] Structure preserved
+- [ ] No hallucinated data
+- [ ] Consistent field naming (use underscore_case)
+- [ ] Proper data types used
+- [ ] null for missing values (as string)
+- [ ] Chunk boundaries handled properly
+- [ ] Raw markdown included
+
+## OUTPUT REQUIREMENTS:
+
+? Return ONLY the JSON object
+? No markdown code fences
+? No explanations before or after
+? Valid JSON syntax
+? Complete data extraction
+? Preserve document structure
+? Include confidence scores where applicable
+
+Return ONLY the JSON object. No explanations. No markdown code blocks. Just pure JSON.
