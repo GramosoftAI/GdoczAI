@@ -10,10 +10,10 @@
 
 <div align="center">
   <a href="#">
-    <img src="https://raw.githubusercontent.com/GramosoftAI/GdoczAI/refs/heads/main/img/mit-license.svg" alt="License" target="_blank">
+    <img src="https://raw.githubusercontent.com/GramosoftAI/GdoczAI/main/img/mit-license.svg" alt="License" target="_blank">
   </a>
   <a href="https://gcrawlai.com" target="_blank">
-    <img src="https://raw.githubusercontent.com/GramosoftAI/GdoczAI/refs/heads/main/img/visits.svg" alt="Visit gcrawlai.com">
+    <img src="https://raw.githubusercontent.com/GramosoftAI/GdoczAI/main/img/visits.svg" alt="Visit gcrawlai.com">
   </a>
 </div>
 
