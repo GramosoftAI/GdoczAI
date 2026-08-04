@@ -212,7 +212,10 @@ class GeminiJSONGenerator(GeminiHeavyMethods):
                 f"Markdown Content:\n{markdown_content}\n\n"
                 f"CRITICAL: Return ONLY valid JSON matching the exact structure of the provided JSON schema. "
                 f"If the schema contains nested arrays or objects (e.g. line items or expenses), you MUST output them strictly as arrays/objects. "
-                f"Do not flatten nested structures if they are defined as arrays in the schema."
+                f"IMPORTANT: Map all line items, products, and services found in the invoice tables into the appropriate array (e.g., 'expense').\n"
+                f"Do not flatten nested structures if they are defined as arrays in the schema.\n"
+                f"For amount-related fields, DO NOT include commas (e.g., output '47000' instead of '47,000').\n"
+                f"DO NOT return null values; if a value is missing, use an empty string \"\" for strings and an empty array [] for arrays."
             )
             return prompt
 
@@ -264,9 +267,76 @@ class GeminiJSONGenerator(GeminiHeavyMethods):
                 f"Use this JSON schema as the expected output structure:\n"
                 f"{json.dumps(schema_json, indent=2)}\n\n"
                 f"Markdown Content:\n{markdown_content}\n\n"
-                f"CRITICAL: Return ONLY valid JSON matching the exact structure of the provided JSON schema. "
-                f"If the schema contains nested arrays or objects (e.g. line items or expenses), you MUST output them strictly as arrays/objects. "
-                f"Do not flatten nested structures if they are defined as arrays in the schema."
+                """==============================================================================
+STRICT OUTPUT RULES (NON-NEGOTIABLE)
+==============================================================================
+
+Return ONLY a single valid JSON object.
+
+The JSON structure MUST match the provided schema EXACTLY.
+
+DO NOT:
+- flatten nested objects
+- flatten arrays
+- move child fields to the root level
+- rename keys
+- remove keys
+- add extra keys
+- convert objects into strings
+- convert arrays into strings
+- include commas in amount-related fields (e.g., output "47000" instead of "47,000")
+- return null values (use "" for missing strings, and [] for missing arrays)
+
+If a field is defined as an OBJECT, it MUST remain an OBJECT.
+
+If a field is defined as an ARRAY OF OBJECTS, it MUST remain an ARRAY containing one or more OBJECTS.
+
+For example, if the schema contains:
+
+"expense": [
+  {
+    "amount": "",
+    "custcol_in_scode_tds": "",
+    "custcol_in_hsn_code": ""
+  }
+]
+
+then your output MUST look like:
+
+"expense": [
+  {
+    "amount": "...",
+    "custcol_in_scode_tds": "...",
+    "custcol_in_hsn_code": "..."
+  }
+]
+
+It MUST NEVER become:
+
+"expense":"{...}"
+
+It MUST NEVER become:
+
+"amount":"...",
+"custcol_in_scode_tds":"...",
+"custcol_in_hsn_code":"..."
+
+These fields MUST exist ONLY inside the expense object.
+
+Every nested property belongs ONLY inside its parent object.
+
+IMPORTANT: The "expense" array (or any array of objects in the schema) must contain ALL line items, products, or services found in the document's tables, even if they are labeled as "Item Description", "Particulars", "Services", etc. Do not leave it empty if there are items in the invoice.
+
+If you cannot determine a value for a string field, return an empty string ("").
+If there are no items for an array field (like expense), return an empty array ([]).
+
+Return ONLY JSON.
+No markdown.
+No explanation.
+No comments.
+No surrounding text.
+
+ANY OUTPUT THAT DOES NOT EXACTLY MATCH THE PROVIDED JSON STRUCTURE IS INVALID."""
             )
             return prompt
 

@@ -717,11 +717,11 @@ async def ocr_vendor(
                 logger.info(f"  - Ship Addr    : {extracted_data.get('shippingaddress')}")
                 logger.info(f"  - GRN No       : {extracted_data.get('custbody_grnvrn_no')}")
                 logger.info(f"  - Insurer      : {extracted_data.get('custbody_insurercd')}")
-                logger.info(f"  - Expense Lines: {len(extracted_data.get('expense', []))}")
+                logger.info(f"  - Expense Lines: {len(extracted_data.get('expense') or [])}")
 
                 # Call post-processor to generate NetSuite JSON
                 netsuite_bill = await post_process_invoice_to_netsuite(
-                    extracted_data=extracted_data, request_id=request_id
+                    extracted_data=extracted_data, request_id=request_id, pg_config=config.pg_config
                 )
 
                 logger.info("? NetSuite Vendor Bill JSON generated successfully")
@@ -730,7 +730,7 @@ async def ocr_vendor(
                 logger.info(f"  - Location      : {netsuite_bill.get('location')}")
                 logger.info(f"  - Due Date      : {netsuite_bill.get('duedate')}")
                 logger.info(
-                    f"  - Expense Lines : {len(netsuite_bill.get('expense', []))}"
+                    f"  - Expense Lines : {len(netsuite_bill.get('expense') or [])}"
                 )
                 logger.info(f"  - Status        : READY for NetSuite API")
 
@@ -757,7 +757,7 @@ async def ocr_vendor(
                         f"?? STEP 5: Storing results in database with enhanced tracking..."
                     )
                     logger.info(
-                        f"   ?? {model_label} Markdown: {len(mistral_markdown) if mistral_markdown else 0} chars"
+                        f"   ?? {model_label} Markdown: {len(final_markdown) if final_markdown else 0} chars"
                     )
                     logger.info(
                         f"   ?? Invoice Number: {invoice_number if invoice_number else 'None'}"

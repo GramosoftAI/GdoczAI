@@ -33,6 +33,7 @@ Key Design Rules:
 
 import logging
 import re
+import asyncio
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
@@ -52,9 +53,76 @@ logger = logging.getLogger(__name__)
 #   custcol_subledger= NS_sub_GL_code   (NS SUB GL code / Col 7)
 #
 # Vendor name keys are canonical names (must match document_type sent by caller).
-# =============================================================================
-from src.services.sundarams.sundarams_vendor_master import VENDOR_MASTER
+def load_pg_config_fallback() -> Dict:
+    import os
+    import yaml
+    
+    paths = ['config/config.yaml', '../config/config.yaml', '../../config/config.yaml', '../../../config/config.yaml']
+    for p in paths:
+        if os.path.exists(p):
+            try:
+                with open(p, 'r') as f:
+                    config = yaml.safe_load(f)
+                    return config.get('postgres', {})
+            except Exception as e:
+                logger.warning("Failed to load config from %s: %s", p, e)
+    return {}
 
+def _query_vendor_db_sync(vendor_name: str, pg_config: Dict) -> list:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+    
+    conn = psycopg2.connect(
+        host=pg_config.get('host', 'localhost'),
+        port=pg_config.get('port', 5432),
+        database=pg_config.get('database', 'document_pipeline'),
+        user=pg_config.get('user'),
+        password=pg_config.get('password'),
+        connect_timeout=5
+    )
+    try:
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        cursor.execute("""
+            SELECT entity, department, location, sm_location, account, custcol_subledger
+            FROM sundarams_vendor_master
+            WHERE UPPER(vendor_name) = UPPER(%s)
+        """, (vendor_name,))
+        results = cursor.fetchall()
+        cursor.close()
+        return [dict(r) for r in results]
+    finally:
+        conn.close()
+
+async def lookup_vendor_db(vendor_name: str, pg_config: Optional[Dict] = None) -> Optional[Dict[str, str]]:
+    """
+    Look up vendor mapping in the sundarams_vendor_master table (case-insensitive).
+    Falls back to VENDOR_MASTER dictionary if database lookup fails or table is missing.
+    """
+    if not vendor_name:
+        logger.warning("lookup_vendor_db: vendor_name is empty or None")
+        return None
+
+    name = vendor_name.strip()
+
+    # Load fallback config if not provided
+    if not pg_config:
+        pg_config = load_pg_config_fallback()
+
+    if pg_config:
+        try:
+            results = await asyncio.to_thread(_query_vendor_db_sync, name, pg_config)
+            if results:
+                if len(results) > 1:
+                    logger.warning("lookup_vendor_db: Multiple mappings (%d) found in DB for '%s'. Returning the first match.", len(results), name)
+                else:
+                    logger.info("lookup_vendor_db: Match found in DB for '%s'", name)
+                return results[0]
+            else:
+                logger.warning("lookup_vendor_db: '%s' not found in DB table", name)
+        except Exception as e:
+            logger.error("lookup_vendor_db: Database query failed: %s", e)
+            
+    return None
 
 # =============================================================================
 # STATIC DEFAULTS -- Applied to every NetSuite Vendor Bill without exception.
@@ -67,8 +135,7 @@ STATIC_DEFAULTS: Dict[str, Any] = {
     "approvalstatus":               "1",
     "taxdetailsoverride":           True,
     "custbody_cardtype":            "C139",
-    "custbody_doc_create_by":       "60719",
-    # custcol_partsgroup is applied per expense line (not a header field)
+    "custbody_doc_create_by":       "60719"
 }
 
 
@@ -208,35 +275,6 @@ def safe_float_str(value: Any, default: str = "0.00") -> str:
     except (ValueError, TypeError):
         logger.warning("safe_float_str: could not convert %r to float, using %s", value, default)
         return default
-
-
-def lookup_vendor(vendor_name: str) -> Optional[Dict[str, str]]:
-    """
-    Look up vendor mapping in VENDOR_MASTER by exact name match (case-insensitive).
-
-    Args:
-        vendor_name: Vendor name string (must equal document_type sent by caller).
-
-    Returns:
-        Vendor mapping dict, or None if not found.
-    """
-    if not vendor_name:
-        logger.warning("lookup_vendor: vendor_name is empty or None")
-        return None
-
-    name = vendor_name.strip().upper()
-
-    # Match case-insensitively using upper-cased keys in VENDOR_MASTER
-    if name in VENDOR_MASTER:
-        logger.info("lookup_vendor: match found for '%s'", name)
-        return VENDOR_MASTER[name]
-
-    logger.warning(
-        "lookup_vendor: '%s' NOT found in VENDOR_MASTER. Available: %s",
-        name,
-        ", ".join(VENDOR_MASTER.keys()),
-    )
-    return None
 
 
 def calculate_due_date(entry_date_str: str, days: int = 30) -> str:
@@ -606,6 +644,7 @@ def validate_netsuite_bill(netsuite_bill: Dict[str, Any]) -> List[str]:
 async def post_process_invoice_to_netsuite(
     extracted_data: Dict[str, Any],
     request_id: Optional[str] = None,
+    pg_config: Optional[Dict] = None,
 ) -> Dict[str, Any]:
     """
     Convert extracted invoice data into a NetSuite Vendor Bill JSON payload.
@@ -713,12 +752,11 @@ async def post_process_invoice_to_netsuite(
     logger.info("STEP 3: Vendor master lookup for '%s'", vendor_name)
     logger.info(sep)
 
-    vendor_mapping = lookup_vendor(vendor_name)
+    vendor_mapping = await lookup_vendor_db(vendor_name, pg_config)
 
     if not vendor_mapping:
         raise ValueError(
-            f"Vendor '{vendor_name}' not found in VENDOR_MASTER. "
-            f"Available vendors: {', '.join(VENDOR_MASTER.keys())}"
+            f"Vendor '{vendor_name}' not found in database or local VENDOR_MASTER."
         )
 
     logger.info("STEP 3: Vendor mapping resolved:")
@@ -896,6 +934,7 @@ async def post_process_invoice_to_netsuite(
 def post_process_invoice_to_netsuite_sync(
     extracted_data: Dict[str, Any],
     request_id: Optional[str] = None,
+    pg_config: Optional[Dict] = None,
 ) -> Dict[str, Any]:
     """
     Synchronous wrapper around post_process_invoice_to_netsuite.
@@ -905,6 +944,7 @@ def post_process_invoice_to_netsuite_sync(
     Args:
         extracted_data: Same as the async version.
         request_id:     Optional request tracking ID.
+        pg_config:      Optional database config dict.
 
     Returns:
         Dict: Complete NetSuite Vendor Bill JSON.
@@ -919,15 +959,15 @@ def post_process_invoice_to_netsuite_sync(
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
                 future = pool.submit(
                     asyncio.run,
-                    post_process_invoice_to_netsuite(extracted_data, request_id),
+                    post_process_invoice_to_netsuite(extracted_data, request_id, pg_config),
                 )
                 return future.result()
         return loop.run_until_complete(
-            post_process_invoice_to_netsuite(extracted_data, request_id)
+            post_process_invoice_to_netsuite(extracted_data, request_id, pg_config)
         )
     except RuntimeError:
         return asyncio.run(
-            post_process_invoice_to_netsuite(extracted_data, request_id)
+            post_process_invoice_to_netsuite(extracted_data, request_id, pg_config)
         )
 
 

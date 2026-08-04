@@ -82,6 +82,12 @@ def get_schema_for_document_type(doc_type_id: int, pg_config: Dict) -> Optional[
         
         if result:
             schema_json = result['schema_json']
+            if isinstance(schema_json, str):
+                try:
+                    import json
+                    schema_json = json.loads(schema_json)
+                except Exception as e:
+                    logger.error(f"Error parsing schema_json from DB (get_schema): {e}")
             logger.info(f"? Found schema for doc_type_id: {doc_type_id}")
             logger.info(f"?? Schema fields: {list(schema_json.keys()) if isinstance(schema_json, dict) else 'N/A'}")
             return schema_json
@@ -265,6 +271,12 @@ def get_document_config(document_type: str, user_id: int, pg_config: Dict) -> Di
         
         schema_result = cursor.fetchone()
         schema_json = schema_result['schema_json'] if schema_result else None
+        if schema_json and isinstance(schema_json, str):
+            try:
+                import json
+                schema_json = json.loads(schema_json)
+            except Exception as e:
+                logger.error(f"Error parsing schema_json from DB (get_config): {e}")
         
         cursor.close()
         conn.close()
