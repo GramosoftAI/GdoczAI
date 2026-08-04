@@ -96,7 +96,7 @@ async def ocr_markdown_only(
         # ============================================================
         model_lower = model.lower()
 
-        if model_lower == "olmocr": #sub name for mistral
+        if model_lower == "standard": #sub name for mistral
             active_processor = mistral_processor
             model_label      = "Mistral OCR"
             logger.info(f"?? [markdown-only] Mistral OCR mode activated | request_id={request_id}")
