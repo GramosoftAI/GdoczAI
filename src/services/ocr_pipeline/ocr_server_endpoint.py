@@ -128,7 +128,7 @@ async def ocr_pdf(
             logger.info(f"? Generated timestamped filename: {file.filename} -> {timestamped_filename}")
 
             # ============================================================
-            # AUTHENTICATION - JWT for user_id, API key for validation only
+            # AUTHENTICATION - JWT/API key validation and user_id extraction
             # ============================================================
             user_id = None
 
@@ -146,7 +146,9 @@ async def ocr_pdf(
                             "message": "API key authentication failed"
                         }
                     )
-                logger.info("? Valid API key")
+                if isinstance(api_key_data, dict):
+                    user_id = api_key_data.get('user_id')
+                logger.info(f"? Valid API key, user_id: {user_id}")
 
             if authorization:
                 logger.info("?? JWT token provided, validating and extracting user_id...")

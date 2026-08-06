@@ -260,7 +260,7 @@ async def ocr_segment(
             )
 
         # ----------------------------------------------------------------
-        # STEP 2: Authentication -- JWT (user_id) + API Key (validation only)
+        # STEP 2: Authentication -- JWT (user_id) + API Key
         # ----------------------------------------------------------------
         user_id: Optional[str] = None
 
@@ -282,8 +282,10 @@ async def ocr_segment(
                         "request_id": request_id,
                     },
                 )
+            if isinstance(api_key_data, dict):
+                user_id = api_key_data.get("user_id")
             logger.info(
-                "[SEGMENT] API key valid | request_id=%s", request_id
+                "[SEGMENT] API key valid (user_id=%s) | request_id=%s", user_id, request_id
             )
 
         if authorization:
