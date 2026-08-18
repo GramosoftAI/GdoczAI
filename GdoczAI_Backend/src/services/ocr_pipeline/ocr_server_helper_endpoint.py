@@ -175,7 +175,9 @@ async def ocr_markdown_only(
                         "request_id": request_id
                     }
                 )
-            logger.info(f"? [markdown-only] Valid API key | request_id={request_id}")
+            if isinstance(api_key_data, dict):
+                user_id = api_key_data.get('user_id')
+            logger.info(f"? [markdown-only] Valid API key (user_id={user_id}) | request_id={request_id}")
 
         if authorization:
             logger.info(
@@ -398,6 +400,8 @@ async def extract_markdown(
         api_key_data = validate_api_key_from_header(x_api_key)
         if not api_key_data:
             raise HTTPException(status_code=401, detail="Invalid API key")
+        if isinstance(api_key_data, dict):
+            user_id = api_key_data.get('user_id')
 
     elif not authorization:
         raise HTTPException(status_code=401, detail="Authorization token or API key required")

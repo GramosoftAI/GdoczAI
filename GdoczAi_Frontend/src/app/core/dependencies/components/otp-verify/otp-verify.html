@@ -1,0 +1,52 @@
+<div class="modal-backdrop" (click)="onClose()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title">Verify OTP</h3>
+          <!-- <button type="button" class="btn-close" (click)="onClose()">×</button> -->
+        </div>
+
+        <div class="modal-body">
+          <p class="otp-instruction">We've sent a 5-digit verification code to your email.</p>
+
+          <div class="otp-container">
+            <ng-otp-input
+              #ngOtpInput
+              [config]="otpConfig"
+              (onInputChange)="onOtpChange($event)">
+            </ng-otp-input>
+          </div>
+
+          @if (errorMessage) {
+            <div class="error-message text-center mt-2">
+              {{ errorMessage }}
+            </div>
+          }
+
+          <div class="resend-section text-center">
+            <p class="text-sm">Didn't receive the code?</p>
+            <button type="button" class="btn-resend" (click)="onResendOtp()" [disabled]="isResending">
+              @if (isResending) {
+                Resending...
+              } @else {
+                Resend OTP
+              }
+            </button>
+
+            @if (counter > 0) {
+              <p class="countdown-text">Resend available in {{ counter }} seconds</p>
+            }
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" (click)="onClose()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="onSubmit()" [disabled]="isLoading || otpValue.length !== 5">
+              @if (isLoading) {
+                Verifying...
+              } @else {
+                Verify OTP
+              }
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>

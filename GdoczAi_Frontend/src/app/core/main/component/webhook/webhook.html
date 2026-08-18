@@ -1,0 +1,183 @@
+<div class="container">
+  <h3 class="fs-3xl">Webhooks</h3>
+  <h2 class="fs-xl">Configure webhook settings for request completion notifications</h2>
+
+  <div class="card p-4 rounded-4 mt-4">
+    <h3 class="fs-xl fw-600 mb-2">Webhooks</h3>
+    <form [formGroup]="webhookForm" (ngSubmit)="onSubmit()">
+      <div class="row align-items-center">
+        <div class="col-md-6 mb-3">
+          <label for="webhook_url" class="form-label">Webhook URL <span class="text-danger">*</span></label>
+          <input type="url" class="form-control" id="webhook_url" formControlName="webhook_url"
+            [class.is-invalid]="isFieldInvalid('webhook_url')" placeholder="An optional URL to call when requests complete">
+
+          @if(isFieldInvalid('webhook_url')){
+          <div class="invalid-feedback d-block">
+            @if(webhookForm.get('webhook_url')?.errors?.['required']){
+            <div>Webhook URL is required</div>
+            }
+            @if(webhookForm.get('webhook_url')?.errors?.['pattern']){
+            <div>Enter a valid URL</div>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="webhook_token" class="form-label">Webhook Secret <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="webhook_token" formControlName="webhook_token"
+            [class.is-invalid]="isFieldInvalid('webhook_token')" placeholder="A secret token to send with the request">
+
+          @if(isFieldInvalid('webhook_token')){
+          <div class="invalid-feedback d-block">
+            @if(webhookForm.get('webhook_token')?.errors?.['required']){
+            <div>Webhook Secret is required</div>
+            }
+            @if(webhookForm.get('webhook_token')?.errors?.['pattern']){
+            <div>Enter a valid Token</div>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label for="webhook_agent_name" class="form-label">Webhook Agent Name <span
+              class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="webhook_agent_name" formControlName="webhook_agent_name"
+            [class.is-invalid]="isFieldInvalid('webhook_agent_name')" placeholder="Enter Webhook Agent Name">
+
+          @if(isFieldInvalid('webhook_agent_name')){
+          <div class="invalid-feedback d-block">
+            @if(webhookForm.get('webhook_agent_name')?.errors?.['required']){
+            <div>Webhook Agent Name is required</div>
+            }
+            @if(webhookForm.get('webhook_agent_name')?.errors?.['pattern']){
+            <div>Enter a valid Name</div>
+            }
+          </div>
+          }
+        </div>
+
+        <div class="col-md-6 mt-2">
+          <label class="minimal-toggle">
+            <input type="checkbox" id="enableWebhook" formControlName="is_active">
+            <div class="toggle"></div>
+            <span>Active</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-center mt-3">
+        <button type="submit" class="btn btn-gradient px-5" [disabled]="!webhookForm.valid">{{!hasWebhookData ? 'Save' : 'Update'}}</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Chip-based Alert Mail Section -->
+  <div class="card p-4 rounded-4 mt-3">
+    <h3 class="fs-xl fw-600 mb-3">Alert Mail</h3>
+
+    <form [formGroup]="alertMailForm" (ngSubmit)="onAlertMailSubmit()">
+      <!-- Email Input with Chips and Buttons in Single Row -->
+      <div class="email-section-row row">
+        <div class="email-input-area col-8">
+          <label class="form-label fw-500 mb-2">Email Addresses <span class="text-danger">*</span></label>
+
+          <!-- Input container with chips -->
+          <div class="email-input-container">
+            <!-- Display chips for existing emails -->
+            <div class="email-chips-container">
+              @for (email of emailChips; track email; let i = $index) {
+                <span class="email-chip" (click)="editChip(i)">
+                  {{email}}
+                  <button type="button" class="chip-remove" (click)="removeChip(i); $event.stopPropagation()">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M9 3L3 9M3 3L9 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </button>
+                </span>
+              }
+
+              <!-- Input field -->
+              <input type="text"
+                     class="email-input-field"
+                     formControlName="cc_mail"
+                     [class.is-invalid]="isAlertMailInvalid()"
+                     placeholder="Enter email address"
+                     (keydown.enter)="addChipFromInput($event)"
+                     (blur)="onInputBlur()">
+            </div>
+
+            <!-- Validation message -->
+            @if(isAlertMailInvalid()){
+            <div class="invalid-feedback d-block mt-2">
+              @if(alertMailForm.get('cc_mail')?.errors?.['required'] && emailChips.length === 0){
+              <div class="d-flex align-items-center">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="me-2">
+                  <path d="M8 14.6667C11.6819 14.6667 14.6667 11.6819 14.6667 8C14.6667 4.3181 11.6819 1.33333 8 1.33333C4.3181 1.33333 1.33333 4.3181 1.33333 8C1.33333 11.6819 4.3181 14.6667 8 14.6667Z" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8 5.33333V8" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8 10.6667H8.00667" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>At least one email address is required</span>
+              </div>
+              }
+              @if(alertMailForm.get('cc_mail')?.errors?.['invalidEmail'] && !isEditingChip && alertMailForm.get('cc_mail')?.value){
+              <div class="d-flex align-items-center">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="me-2">
+                  <path d="M8 14.6667C11.6819 14.6667 14.6667 11.6819 14.6667 8C14.6667 4.3181 11.6819 1.33333 8 1.33333C4.3181 1.33333 1.33333 4.3181 1.33333 8C1.33333 11.6819 4.3181 14.6667 8 14.6667Z" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8 5.33333V8" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M8 10.6667H8.00667" stroke="#dc3545" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Please enter a valid email address</span>
+              </div>
+              }
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Buttons in the same row -->
+        <div class="email-action-buttons col-4 row">
+          <button type="button" class="btn btn-outline-secondary add-btn col" (click)="addChipFromInput()">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="me-1">
+              <path d="M8 3.33333V12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3.33333 8H12.6667" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Add
+          </button>
+
+          <button type="submit" class="btn btn-gradient save-btn col" [disabled]="emailChips.length === 0">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="me-1">
+              <path d="M13.3333 14.6667H2.66667C2.31305 14.6667 1.97391 14.5262 1.72386 14.2761C1.47381 14.0261 1.33333 13.687 1.33333 13.3333V2.66667C1.33333 2.31305 1.47381 1.97391 1.72386 1.72386C1.97391 1.47381 2.31305 1.33333 2.66667 1.33333H10.6667L14.6667 5.33333V13.3333C14.6667 13.687 14.5262 14.0261 14.2761 14.2761C14.0261 14.6667 13.687 14.6667 13.3333 14.6667Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12.6667 14.6667V8.66667H3.33333V14.6667" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3.33333 1.33333V5.33333H9.33333" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{hasAlertMailData ? 'Update' : 'Save'}}
+          </button>
+
+          @if (hasAlertMailData) {
+            <button type="button" class="btn btn-outline-danger delete-btn col" (click)="deleteAlertMail()">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="me-1">
+                <path d="M2 4H3.33333H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5.33333 4V2.66667C5.33333 2.31305 5.47381 1.97391 5.72386 1.72386C5.97391 1.47381 6.31305 1.33333 6.66667 1.33333H9.33333C9.68696 1.33333 10.0261 1.47381 10.2761 1.72386C10.5262 1.97391 10.6667 2.31305 10.6667 2.66667V4M12.6667 4V13.3333C12.6667 13.687 12.5262 14.0261 12.2761 14.2761C12.0261 14.5262 11.687 14.6667 11.3333 14.6667H4.66667C4.31305 14.6667 3.97391 14.5262 3.72386 14.2761C3.47381 14.0261 3.33333 13.687 3.33333 13.3333V4H12.6667Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6.66667 7.33333V11.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M9.33333 7.33333V11.3333" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Delete
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Helper text -->
+      <div class="form-text mt-3 d-flex align-items-center">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" class="me-2">
+          <path d="M8 14.6667C11.6819 14.6667 14.6667 11.6819 14.6667 8C14.6667 4.3181 11.6819 1.33333 8 1.33333C4.3181 1.33333 1.33333 4.3181 1.33333 8C1.33333 11.6819 4.3181 14.6667 8 14.6667Z" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 10.6667V8" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 5.33333H8.00667" stroke="#667eea" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Press Enter or click Add to add an email. Click on a badge to edit it. Click the × to remove.
+      </div>
+    </form>
+  </div>
+</div>

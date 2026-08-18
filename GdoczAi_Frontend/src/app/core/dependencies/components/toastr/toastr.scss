@@ -1,0 +1,181 @@
+// toastr.scss
+.toastr-container {
+  position: fixed;
+  z-index: 9999;
+  padding: 1rem;
+  pointer-events: none;
+
+  &.toastr-top-right {
+    top: 0;
+    right: 0;
+  }
+
+  &.toastr-top-left {
+    top: 0;
+    left: 0;
+  }
+
+  &.toastr-bottom-right {
+    bottom: 0;
+    right: 0;
+  }
+
+  &.toastr-bottom-left {
+    bottom: 0;
+    left: 0;
+  }
+}
+
+.toastr {
+  display: flex;
+  align-items: center;
+  min-width: 300px;
+  max-width: 400px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  pointer-events: all;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  transform: translateX(0);
+  opacity: 1;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  // Progress Bar
+  .toastr-progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+
+    .toastr-progress-bar {
+      height: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      animation: progressBar linear forwards;
+    }
+  }
+
+  // Types
+  &.toastr-success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-left: 4px solid #047857;
+  }
+
+  &.toastr-error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-left: 4px solid #b91c1c;
+  }
+
+  &.toastr-warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border-left: 4px solid #b45309;
+  }
+
+  &.toastr-info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-left: 4px solid #1d4ed8;
+  }
+}
+
+.toastr-icon {
+  font-size: 1.25rem;
+  margin-right: 0.75rem;
+  font-weight: bold;
+  z-index: 1;
+}
+
+.toastr-content {
+  flex: 1;
+  z-index: 1;
+}
+
+.toastr-message {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.toastr-close {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 1.25rem;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.5rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  z-index: 1;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+// Progress bar animation
+@keyframes progressBar {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
+// Animations for toast entry
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.toastr-top-right .toastr,
+.toastr-bottom-right .toastr {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toastr-top-left .toastr,
+.toastr-bottom-left .toastr {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .toastr-container {
+    padding: 0.5rem;
+    width: 100%;
+  }
+
+  .toastr {
+    min-width: auto;
+    width: calc(100% - 1rem);
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+}

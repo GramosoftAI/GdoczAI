@@ -1,0 +1,88 @@
+<div>
+  <!-- <h3 class="fs-3xl mb-4">Prompt Template</h3> -->
+  <div class="table-boundary dl-glow-border text-sm">
+    <table class="inline-table w-100 table-auto">
+      <thead>
+        <tr>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Doc Type</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Prompt Type</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Prompt</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (data of Schemas; track $index) {
+        <tr>
+          <td class="px-8 py-4 text-left whitespace-normal">{{data.document_type}}</td>
+          <td class="px-8 py-4 text-left whitespace-normal">
+            <span class="badge" [class.bg-primary]="data.prompt_field === 'json'"
+              [class.bg-info]="data.prompt_field === 'text'">
+              {{data.prompt_field === 'json' ? 'JSON' : 'Text'}}
+            </span>
+          </td>
+          <td class="px-8 py-4 text-left whitespace-normal text-truncate" style="max-width: 200px;">
+            {{data.extraction_schema | jsonFormat}}
+          </td>
+          <td scope="row" style="cursor: default;">
+            <span class="text-nowrap">
+              <button class="btn border-0 btn-icon mx-1"
+                (click)="this.router.navigate(['/main/prompt-template/edit', data.doc_type_id])">
+                <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M12.8767 17.6406H5.52335C2.65585 17.6406 0.729187 15.6281 0.729187 12.6331V5.70476C0.729187 2.70977 2.65585 0.697266 5.52335 0.697266H8.63919C8.98419 0.697266 9.26419 0.977266 9.26419 1.32227C9.26419 1.66727 8.98419 1.94727 8.63919 1.94727H5.52335C3.37002 1.94727 1.97919 3.42227 1.97919 5.70476V12.6331C1.97919 14.9156 3.37002 16.3906 5.52335 16.3906H12.8767C15.03 16.3906 16.4217 14.9156 16.4217 12.6331V9.27643C16.4217 8.93143 16.7017 8.65143 17.0467 8.65143C17.3917 8.65143 17.6717 8.93143 17.6717 9.27643V12.6331C17.6717 15.6281 15.7442 17.6406 12.8767 17.6406Z" fill="black" />
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M6.45218 11.8569H8.93301C9.24968 11.8569 9.54635 11.7344 9.77051 11.5103L16.028 5.25276C16.2847 4.9961 16.4263 4.65443 16.4263 4.2911C16.4263 3.92693 16.2847 3.58443 16.028 3.32776L15.0138 2.3136C14.483 1.78443 13.6197 1.78443 13.088 2.3136L6.86051 8.5411C6.64468 8.75693 6.52218 9.0436 6.51468 9.34776L6.45218 11.8569ZM8.93301 13.1069H5.81135C5.64301 13.1069 5.48135 13.0386 5.36385 12.9178C5.24635 12.7978 5.18218 12.6353 5.18635 12.4661L5.26468 9.31693C5.28051 8.69026 5.53301 8.1011 5.97635 7.65693H5.97718L12.2047 1.42943C13.223 0.412764 14.8788 0.412764 15.8972 1.42943L16.9113 2.4436C17.4055 2.93693 17.6772 3.59276 17.6763 4.2911C17.6763 4.98943 17.4047 5.64443 16.9113 6.13693L10.6538 12.3944C10.1947 12.8536 9.58301 13.1069 8.93301 13.1069Z" fill="black" />
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M15.5049 7.26388C15.3449 7.26388 15.1849 7.20304 15.0633 7.08054L11.2583 3.27554C11.0141 3.03138 11.0141 2.63554 11.2583 2.39138C11.5024 2.14721 11.8974 2.14721 12.1416 2.39138L15.9466 6.19721C16.1908 6.44138 16.1908 6.83638 15.9466 7.08054C15.8249 7.20304 15.6649 7.26388 15.5049 7.26388Z" fill="black" />
+                </svg>
+              </button>
+              <button class="btn border-0 btn-icon mx-1" (click)="confirmDelete(data)">
+                <svg width="16" height="18" viewBox="0 0 16 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.26793 17.3334C7.13876 17.3334 6.03793 17.3209 4.94876 17.2984C3.55543 17.2709 2.59126 16.3675 2.43376 14.9409C2.17126 12.5742 1.72209 6.99588 1.71793 6.94004C1.68959 6.59588 1.94626 6.29421 2.29043 6.26671C2.62959 6.25754 2.93626 6.49588 2.96376 6.83921C2.96793 6.89588 3.41626 12.455 3.67626 14.8034C3.76543 15.6142 4.20293 16.0325 4.97459 16.0484C7.05793 16.0925 9.18376 16.095 11.4754 16.0534C12.2954 16.0375 12.7388 15.6275 12.8304 14.7975C13.0888 12.4692 13.5388 6.89588 13.5438 6.83921C13.5713 6.49588 13.8754 6.25588 14.2163 6.26671C14.5604 6.29504 14.8171 6.59588 14.7896 6.94004C14.7846 6.99671 14.3329 12.5892 14.0729 14.935C13.9113 16.3909 12.9496 17.2767 11.4979 17.3034C10.3871 17.3225 9.31543 17.3334 8.26793 17.3334Z" fill="black" />
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M15.3191 4.8244H1.18744C0.842439 4.8244 0.562439 4.5444 0.562439 4.1994C0.562439 3.8544 0.842439 3.5744 1.18744 3.5744H15.3191C15.6641 3.5744 15.9441 3.8544 15.9441 4.1994C15.9441 4.5444 15.6641 4.8244 15.3191 4.8244Z" fill="black" />
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M12.5961 4.82443C11.6478 4.82443 10.8244 4.1486 10.6378 3.2186L10.4353 2.20526C10.3928 2.0511 10.2169 1.91693 10.0169 1.91693H6.48944C6.28944 1.91693 6.11361 2.0511 6.06278 2.2436L5.86861 3.2186C5.68278 4.1486 4.85861 4.82443 3.91028 4.82443C3.56528 4.82443 3.28528 4.54443 3.28528 4.19943C3.28528 3.85443 3.56528 3.57443 3.91028 3.57443C4.26528 3.57443 4.57361 3.3211 4.64361 2.97276L4.84611 1.95943C5.05194 1.18276 5.72444 0.666931 6.48944 0.666931H10.0169C10.7819 0.666931 11.4544 1.18276 11.6519 1.92193L11.8636 2.97276C11.9328 3.3211 12.2411 3.57443 12.5961 3.57443C12.9411 3.57443 13.2211 3.85443 13.2211 4.19943C13.2211 4.54443 12.9411 4.82443 12.5961 4.82443Z" fill="black" />
+                </svg>
+              </button>
+            </span>
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="4" class="px-8 py-4 text-center text-muted">No Schemas found</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- Delete Confirmation Modal -->
+@if (showDeleteModal) {
+<div class="modal-backdrop show"></div>
+<div class="modal show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg rounded-3 border-0 mx-5">
+      <!-- Header -->
+      <div class="modal-header border-0 d-flex justify-content-center bg-dark text-white rounded-top">
+        <h5 class="modal-title d-flex align-items-center gap-2 m-0 fs-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+            class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.964 0l-6.857 11.5c-.457.765.091 1.934.982 1.934h13.714c.89 0 1.438-1.169.982-1.934l-6.857-11.5zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" /> </svg>
+          Confirm Delete
+        </h5>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body text-center p-4 mt-3">
+        <p class="fs-md text-muted">Are you sure you want to delete the schema?</p>
+        <p class="text-danger">This action cannot be undone.</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer d-flex justify-content-center border-0 gap-2 pb-4">
+        <button type="button" class="btn btn-outline-secondary px-4 rounded-pill"
+          (click)="closeDeleteModal()">Cancel</button>
+        <button type="button" class="btn bg-dark px-4 rounded-pill text-white" (click)="deleteType()">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+}

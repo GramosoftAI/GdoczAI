@@ -1,0 +1,128 @@
+<!-- <div class="app-container">
+    <div class="overlay"></div>
+    <div class="app-sidenav custom-scrollbar sidebar-opened" style="width: 220px;">
+      <div class="sidebar-header fixed-header">
+        <div class="d-flex pt-2 pb-3 justify-content-between">
+          <button aria-label="DATALAB" class="btn border-0">
+            <img src="/assets/icons/logo.svg" alt="DATALAB" class="img img-fluid header-logo">
+          </button>
+          <button aria-label="Toggle sidebar" class="btn border-0 px-3 rounded-2 text-white toggle-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-panel-left">
+              <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+              <path d="M9 3v18"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="navlist-content scrollable-content">
+        <div class="accordion menu-accordian" id="menuAccordian0">
+          <button type="button" routerlinkactive="active" aria-label="Menu Button" class="accordion-link primary active" tabindex="0">
+            <img alt="Icon" class="img img-fluid me-2" style="width: 20px; height: 20px;" src="/assets/icons/playground.png">
+            <span class="d-block"> Playground</span>
+          </button>
+        </div>
+      </div>
+      <div class="sidebar-footer fixed-footer">
+        <div class="p-3">
+          <a type="button" routerLink="/auth/sign_in" class="btn user-profile-btn w-100 border-1 rounded-5 bg-red mb-2">Login</a>
+        </div>
+      </div>
+    </div>
+    <main class="w-100 sidenav-opened">
+      <div class="router-container my-5">
+        <app-playground mode="demo"></app-playground>
+      </div>
+    </main>
+  </div>
+  <footer class="footer">
+    <p class="mb-0 text-dark text-center py-2 bg-white">
+      <small>Copyright 2025 © <a href="https://gramosoft.tech/" target="_blank">Gramosoft</a> All rights reserved</small></p>
+  </footer>
+  <div class="modal fade" style="background: rgba(0, 0, 0, 0.6); display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg rounded-3 border-0 mx-5">
+        <div class="modal-header border-0 d-flex justify-content-center bg-dark text-white rounded-top">
+          <h5 class="modal-title d-flex align-items-center gap-2 m-0 fs-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16" class="bi bi-exclamation-triangle-fill">
+              <path d="M8.982 1.566a1.13 1.13 0 0 0-1.964 0l-6.857 11.5c-.457.765.091 1.934.982 1.934h13.714 c.89 0 1.438-1.169.982-1.934l-6.857-11.5zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
+            </svg>
+            Logout
+          </h5>
+        </div>
+        <div class="modal-body text-center p-4 mt-3">
+          <p class="fs-md text-muted">Are you sure you want to Logout?</p>
+        </div>
+        <div class="modal-footer d-flex justify-content-center border-0 gap-2 pb-4"><button type="button"
+            class="btn btn-outline-secondary px-4 rounded-pill"> No
+          </button><button type="button" class="btn bg-dark px-4 rounded-pill text-white">
+            Yes </button></div>
+      </div>
+    </div>
+  </div> -->
+
+
+
+<div class="container-lg min-vh-100 d-flex flex-column">
+  <nav class="navbar navbar-expand px-0 py-2">
+    <div class="container-fluid px-0">
+      <button aria-label="DATALAB" class="btn border-0">
+        <img src="/assets/icons/logo.svg" alt="DATALAB" class="img img-fluid header-logo">
+      </button>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <a routerLink="/auth/sign_in" class="btn btn-outline-login" role="button">Login</a>
+        <a routerLink="/auth/contact-us" class="btn btn-demo" role="button">Book a Demo</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero-section text-center d-flex flex-column flex-grow-1" style="padding-bottom: 0;">
+    <h1 class="fs-2 fw-bold mb-2 mt-3">Enterprise Document Automation Powered by AI</h1>
+    <p class="lead-text mx-auto mb-2" style="max-width: 680px; font-size: 1.1rem;">
+      Eliminate manual data entry. GdoczAI processes your PDFs, scans, and documents with precision — at any scale.
+    </p>
+
+    <div class="upload-card mt-4 flex-grow-1 d-flex flex-column">
+      <main class="w-100 flex-grow-1 d-flex flex-column">
+        <div class="router-container my-2 flex-grow-1">
+          <app-playground mode="demo" class="playground-upload h-100 d-block"></app-playground>
+        </div>
+      </main>
+    </div>
+
+    <!-- <p class="footer-note text-center w-100 mx-auto">
+      ⚡ Zero-setup OCR • On-premise ready • Angular 20 compatible
+    </p> -->
+  </div>
+
+
+  <footer class="footer mt-auto py-1">
+    <p class="mb-0 text-dark text-center bg-white">
+      <small>Copyright 2026 © <a href="https://gramosoft.tech/" target="_blank">Gramosoft</a> All rights
+        reserved</small>
+    </p>
+  </footer>
+  <div class="modal fade" style="background: rgba(0, 0, 0, 0.6); display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content shadow-lg rounded-3 border-0 mx-5">
+        <div class="modal-header border-0 d-flex justify-content-center bg-dark text-white rounded-top">
+          <h5 class="modal-title d-flex align-items-center gap-2 m-0 fs-xl">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16"
+              class="bi bi-exclamation-triangle-fill">
+              <path
+                d="M8.982 1.566a1.13 1.13 0 0 0-1.964 0l-6.857 11.5c-.457.765.091 1.934.982 1.934h13.714 c.89 0 1.438-1.169.982-1.934l-6.857-11.5zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z">
+              </path>
+            </svg>
+            Logout
+          </h5>
+        </div>
+        <div class="modal-body text-center p-4 mt-3">
+          <p class="fs-md text-muted">Are you sure you want to Logout?</p>
+        </div>
+        <div class="modal-footer d-flex justify-content-center border-0 gap-2 pb-4"><button type="button"
+            class="btn btn-outline-secondary px-4 rounded-pill"> No
+          </button><button type="button" class="btn bg-dark px-4 rounded-pill text-white">
+            Yes </button></div>
+      </div>
+    </div>
+  </div>
+</div>

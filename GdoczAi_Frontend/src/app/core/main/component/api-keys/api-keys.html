@@ -1,0 +1,87 @@
+<div class="container">
+  <div class="d-flex align-items-center justify-content-between">
+    <div>
+      <h3 class="fs-3xl">API Keys</h3>
+      <p class="fs-xl">Manage your access tokens</p>
+    </div>
+    <button type="button" class="btn btn-gradient px-5 me-3" (click)="createKeyList()">New API Key</button>
+  </div>
+  @if (apiKeyList) {
+    <div class="table-boundary dl-glow-border text-sm">
+    <table class="inline-table w-auto table-auto">
+      <thead>
+        <tr>
+          <th class="py-4 text-left fs-sm fw-500 theme-color whitespace-normal">API Key</th>
+          <th class="py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Created</th>
+          <th class="py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Status</th>
+          <th class="py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td class="py-4 fs-md fw-500 text-left whitespace-normal">{{apiKeyList?.key_prefix}}....</td>
+          <td class="py-4 fs-sm fw-500 text-left whitespace-normal">{{apiKeyList.created_at | date:'short'}}</td>
+          <td class="py-4 fs-sm text-left whitespace-normal text-capitalize">
+            <span class="p-1 rounded-3" style="color: rgba(28, 191, 114, 1); background:rgba(194, 255, 226, 1)">{{apiKeyList.status}}</span></td>
+          <td class="py-4 fs-sm text-left whitespace-normal d-flex align-items-center gap-4">
+            <a type="button" (click)="copyToClipboard(apiKeyList?.api_key)" class="fs-md text-dark fw-500 text-decoration-none">Copy Key &nbsp;
+              <svg fill="none" height="20" width="20" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><g stroke="#1a1a1a" stroke-width="1.8"><path d="m4.28613 4.28603v-.31581l.00302-.19297.006-.17635.00897-.16104c.03131-.46141.1023-.73331.20985-.97169l.0372-.07844.03988-.07723c.19921-.37249.49154-.66482.86402-.86403l.07724-.03988.07844-.0372c.22514-.10157.48017-.17053.89651-.20427l.15386-.01043c.02683-.0015.05427-.00287.08235-.00412l.17636-.006.19297-.00302h4.9173l.193.00302.1764.006.161.00897c.4614.03132.7333.1023.9717.20985l.0784.0372.0773.03988c.3725.19921.6648.49154.864.86403l.0399.07723.0372.07844c.1015.22514.1705.48017.2042.89651l.0105.15386c.0015.02683.0028.05427.0041.08236l.006.17635.003.19297c.0003.03362.0004.06798.0004.10311v4.71112l-.0015.20175c-.0005.03215-.0012.06359-.0019.09433l-.006.17636-.009.16103c-.0313.46142-.1023.73328-.2098.97168l-.0372.0784-.0399.0773c-.1992.3725-.4915.6648-.864.864l-.0773.0399-.0784.0372c-.2252.1016-.4802.1705-.8965.2043l-.1539.0104c-.0268.0015-.0543.0029-.0823.0041l-.1764.006-.193.003c-.0336.0003-.0679.0004-.1031.0004-.0945 0-.1654 0-.2127 0"></path><path clip-rule="evenodd" d="m3.96998 4.28613h4.91734l.19296.00302.17636.006.16104.00897c.46141.03131.73332.1023.97172.20985l.0784.0372.0772.03988c.3725.19921.6649.49154.8641.86402l.0398.07724.0372.07844c.1016.22514.1706.48017.2043.89651l.0105.15386c.0014.02683.0028.05427.0041.08235l.006.17636.003.19297c.0002.03361.0004.06798.0004.10311v4.71109l-.0015.2018c-.0006.0321-.0012.0636-.0019.0943l-.006.1764-.009.161c-.0313.4614-.1023.7333-.2099.9717l-.0372.0784-.0398.0773c-.1992.3725-.4916.6648-.8641.864l-.0772.0399-.0784.0372c-.2252.1015-.4802.1705-.89655.2042l-.15385.0105c-.02683.0015-.05428.0028-.08236.0041l-.17636.006-.19296.003c-.03362.0003-.06798.0004-.10311.0004h-4.71112l-.20175-.0015c-.03216-.0005-.06359-.0012-.09433-.0019l-.17636-.006-.16104-.009c-.46141-.0313-.7333-.1023-.97169-.2098l-.07843-.0372-.07724-.0399c-.37248-.1992-.66481-.4915-.86402-.864l-.03989-.0773-.03719-.0784c-.10158-.2252-.17054-.4802-.20427-.8965l-.01044-.1539c-.00149-.0268-.00286-.0543-.00411-.0823l-.00601-.1764-.00301-.193v-4.9173l.00301-.19297.00601-.17636.00896-.16103c.03132-.46141.10231-.73331.20986-.97169l.03719-.07844.03989-.07724c.19921-.37248.49154-.66481.86402-.86402l.07724-.03988.07843-.0372c.22515-.10158.48018-.17054.89652-.20427l.15386-.01044c.02683-.00149.05427-.00286.08235-.00411l.17636-.006z" fill-rule="evenodd"></path></g></svg>
+            </a>
+            <a type="button" (click)="deleteKey()" class="fs-md fw-500 text-danger text-decoration-none">Revoke&nbsp;
+              <svg fill="none" height="20" width="20" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="m6 9h6m4.5 0c0 4.1421-3.3579 7.5-7.5 7.5-4.14214 0-7.5-3.3579-7.5-7.5 0-4.14214 3.35786-7.5 7.5-7.5 4.1421 0 7.5 3.35786 7.5 7.5z" stroke="#ff1c1c" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  }
+  @else {
+    <div class="text-center">
+          <div class="py-4 text-center text-muted">No data available. Please create a Key first.
+            <a routerLink="/main/playground" type="button"
+              class="text-primary text-decoration-none cursor-pointer">Create API Key</a>
+          </div>
+        </div>
+  }
+</div>
+
+
+
+<div #confirmationModal class="modal fade" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-bottom-0">
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="modal-body text-center">
+        <svg fill="none" height="34" viewBox="0 0 34 34" width="34" xmlns="http://www.w3.org/2000/svg">
+          <g clip-path="url(#a)">
+            <path d="m0 17c0 9.3888 7.61116 17 17 17 9.3888 0 17-7.6112 17-17 0-9.38884-7.6112-17-17-17-9.38884 0-17 7.61116-17 17z" fill="#fff"></path>
+            <path clip-rule="evenodd" d="m17 0c9.3872 0 17 7.61281 17 17 0 9.3872-7.6128 17-17 17-9.38719 0-17-7.6128-17-17 0-9.38719 7.61281-17 17-17zm-3.5303 22.5217-4.16198-4.1654c-.70906-.7095-.70921-1.8665 0-2.5758.70938-.7092 1.87148-.7048 2.57568 0l2.9342 2.9365 7.2993-7.2993c.7093-.7094 1.8664-.7094 2.5756 0 .7094.7092.7084 1.8673 0 2.5756l-8.5892 8.5892c-.7083.7084-1.8664.7094-2.5756 0-.02-.0199-.0392-.0401-.058-.0608z" fill="#00ba00" fill-rule="evenodd"></path>
+          </g>
+          <defs>
+            <clipPath id="a">
+              <path d="m0 0h34v34h-34z"></path>
+            </clipPath>
+          </defs>
+        </svg>
+
+        <div class="p-3">
+          <h5 class="fs-lg fw-600">API key has been created</h5>
+          <p class="fs-sm text-muted">You can now use the below unique key in your project</p>
+
+          <div class="mt-4">
+            <div class="bg-sub-primary rounded-3 p-4 text-center fs-sm">
+              <h5>{{apiKey}}</h5>
+            </div>
+          </div>
+
+          <button class="btn bg-dark text-white rounded-3 px-4 py-2 mt-3" (click)="copyToClipboard(apiKey)">Copy API Key</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

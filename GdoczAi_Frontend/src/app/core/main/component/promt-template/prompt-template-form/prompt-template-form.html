@@ -1,0 +1,382 @@
+<div class="container">
+  <!-- <h3 class="fs-3xl mb-4">Prompt Template</h3> -->
+  <!-- <div class="row"> -->
+
+  <div>
+    <div class="card common-card">
+      <div class="card-header">
+        <h3 class="fs-xl fw-600 mb-0">{{ editingSchema ? 'Edit Prompt' : 'Add Prompt' }}</h3>
+      </div>
+      <div class="card-body compact-form">
+        <form [formGroup]="schemaForm" (ngSubmit)="onSubmit()">
+          <!-- {{ schemaForm.value | json}} -->
+          <div class="row">
+            <!-- Document Type -->
+            <div class="col-md-6 mb-3">
+              <label for="doc_type_id" class="form-label">Document Type <span class="text-danger">*</span></label>
+              <select id="doc_type_id" formControlName="doc_type_id" class="form-select rounded-3">
+                <option value="" disabled selected>Choose a Document Type</option>
+                @for (item of docTypes; track $index) {
+                <option [value]="item.doc_type_id">{{ item.document_type }}</option>
+                }
+              </select>
+              @if(isFieldInvalid('doc_type_id')){
+              <div class="invalid-feedback d-block">
+                @if(schemaForm.get('doc_type_id')?.errors?.['required']){
+                <div>Document Type is required</div>
+                }
+              </div>
+              }
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="logic_type_id" class="form-label">PreDefined Schema <span class="text-danger">*</span></label>
+              <select id="logic_type_id" formControlName="logic_type_id" class="form-select rounded-3"
+                (change)="loadLogicById()">
+                <option value="" disabled selected>Choose a PreDefined Schema</option>
+                <option [ngValue]="null">Others</option>
+                @for (item of logics; track $index) {
+                <option [ngValue]="item.logic_type_id">{{ item.logic_name }}</option>
+                }
+              </select>
+              @if(isFieldInvalid('logic_type_id')){
+              <div class="invalid-feedback d-block">
+                @if(schemaForm.get('logic_type_id')?.errors?.['required']){
+                <div>Document Logic is required</div>
+                }
+              </div>
+              }
+            </div>
+
+            <!-- Prompt Type Selection -->
+            <div class="col-12 mb-3">
+              <!-- <div class="d-block d-sm-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <label class="form-label mb-0">Prompt Type <span class="text-danger">*</span></label>
+                    <div class="form-check form-check-inline ms-3">
+                      <input class="form-check-input" type="radio" name="prompt_field" id="prompt_fieldText"
+                        [value]="'text'" formControlName="prompt_field" (change)="onPromptTypeChange('text')">
+                      <label class="form-check-label" for="prompt_fieldText">Text</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="prompt_field" id="prompt_fieldJson"
+                        [value]="'json'" formControlName="prompt_field" (change)="onPromptTypeChange('json')">
+                      <label class="form-check-label" for="prompt_fieldJson">JSON</label>
+                    </div>
+                  </div>
+                </div> -->
+
+              <!-- TEXT MODE -->
+              <!-- @if (schemaForm.get('prompt_field')?.value === 'text') {
+                <div>
+                  <label for="extraction_schema_text" class="mb-2">Text Prompt <span
+                      class="text-danger">*</span></label>
+                  <textarea class="form-control" id="extraction_schema_text" formControlName="extraction_schema_text"
+                    rows="4" placeholder="Enter text prompt"></textarea>
+                  @if(isFieldInvalid('extraction_schema_text')){
+                  <div class="invalid-feedback d-block">
+                    @if(schemaForm.get('extraction_schema_text')?.errors?.['required']){
+                    <div>Text prompt is required</div>
+                    }
+                    @if(schemaForm.get('extraction_schema_text')?.errors?.['notOnlyWhitespace']){
+                    <div>Text prompt cannot be only whitespace</div>
+                    }
+                    @if(schemaForm.get('extraction_schema_text')?.errors?.['noLeadingSpace']){
+                    <div>Text prompt cannot start with space</div>
+                    }
+                  </div>
+                  }
+                </div>
+                } -->
+
+              <!-- JSON BUILDER MODE -->
+              <!-- @if (schemaForm.get('prompt_field')?.value === 'json') { -->
+              <div>
+                <div class="extract-header d-flex justify-content-between align-items-baseline my-3">
+                  <div>
+                    <h4 class="extract-title">JSON Builder</h4>
+                  </div>
+                  <button type="button" (click)="toggleJsonView()" class="btn btn-light">
+                    <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" class="w-4 h-4">
+                      <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                        stroke-width="2" d="m7 8l-4 4l4 4m10-8l4 4l-4 4M14 4l-4 16"></path>
+                    </svg>
+                    {{showJsonOnClick ? 'Hide JSON' : 'Show JSON'}}
+                  </button>
+                </div>
+
+                @if (!showJsonOnClick) {
+                <div class="extract-form overflow-x-auto">
+                  <div class="schema-container">
+                    <div class="schema-table-wrapper">
+                      <table class="schema-table">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Desc</th>
+                            <th>Req</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody formArrayName="fields">
+                          @for (field of fields.controls; track field; let i = $index) {
+                          @let fieldGroup = getFieldGroup(field);
+                          @let fieldType = fieldGroup.get('type')?.value;
+                          @let isObjectType = fieldType === 'Object';
+                          @let isArrayType = fieldType === 'Array';
+
+                          <tr [formGroupName]="i" class="schema-row">
+                            <!-- Field Name -->
+                            <td>
+                              <input type="text" formControlName="field_name" placeholder="Field Name"
+                                class="form-control form-control-sm"
+                                [class.is-invalid]="fieldGroup.get('field_name')?.invalid && fieldGroup.get('field_name')?.touched">
+                              @if (fieldGroup.get('field_name')?.invalid && fieldGroup.get('field_name')?.touched) {
+                              <div class="invalid-feedback d-block">
+                                Field Name is required
+                              </div>
+                              }
+                            </td>
+
+                            <!-- Field Type -->
+                            <td>
+                              <select formControlName="type" class="form-select form-select-sm"
+                                (change)="onTypeChange(i)">
+                                @for (type of getFieldTypeOptions(); track type) {
+                                <option [value]="type">{{ type }}</option>
+                                }
+                              </select>
+                            </td>
+
+                            <!-- Description -->
+                            <td>
+                              <input type="text" formControlName="description"
+                                placeholder="Describe what this field contains..." class="form-control form-control-sm">
+                            </td>
+
+                            <!-- Required -->
+                            <td class="text-center">
+                              <input type="checkbox" formControlName="required" class="form-check-input">
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="text-center">
+                              <button type="button" (click)="removeField(i)" class="btn btn-sm border-0 remove-btn"
+                                title="Remove this field" [disabled]="fields.length <= 1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 16 18"
+                                  fill="currentColor">
+                                  <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M8.26793 17.3334C7.13876 17.3334 6.03793 17.3209 4.94876 17.2984C3.55543 17.2709 2.59126 16.3675 2.43376 14.9409C2.17126 12.5742 1.72209 6.99588 1.71793 6.94004C1.68959 6.59588 1.94626 6.29421 2.29043 6.26671C2.62959 6.25754 2.93626 6.49588 2.96376 6.83921C2.96793 6.89588 3.41626 12.455 3.67626 14.8034C3.76543 15.6142 4.20293 16.0325 4.97459 16.0484C7.05793 16.0925 9.18376 16.095 11.4754 16.0534C12.2954 16.0375 12.7388 15.6275 12.8304 14.7975C13.0888 12.4692 13.5388 6.89588 13.5438 6.83921C13.5713 6.49588 13.8754 6.25588 14.2163 6.26671C14.5604 6.29504 14.8171 6.59588 14.7896 6.94004C14.7846 6.99671 14.3329 12.5892 14.0729 14.935C13.9113 16.3909 12.9496 17.2767 11.4979 17.3034C10.3871 17.3225 9.31543 17.3334 8.26793 17.3334Z" />
+                                  <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M15.3191 4.8244H1.18744C0.842439 4.8244 0.562439 4.5444 0.562439 4.1994C0.562439 3.8544 0.842439 3.5744 1.18744 3.5744H15.3191C15.6641 3.5744 15.9441 3.8544 15.9441 4.1994C15.9441 4.5444 15.6641 4.8244 15.3191 4.8244Z" />
+                                  <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M12.5961 4.82443C11.6478 4.82443 10.8244 4.1486 10.6378 3.2186L10.4353 2.20526C10.3928 2.0511 10.2169 1.91693 10.0169 1.91693H6.48944C6.28944 1.91693 6.11361 2.0511 6.06278 2.2436L5.86861 3.2186C5.68278 4.1486 4.85861 4.82443 3.91028 4.82443C3.56528 4.82443 3.28528 4.54443 3.28528 4.19943C3.28528 3.85443 3.56528 3.57443 3.91028 3.57443C4.26528 3.57443 4.57361 3.3211 4.64361 2.97276L4.84611 1.95943C5.05194 1.18276 5.72444 0.666931 6.48944 0.666931H10.0169C10.7819 0.666931 11.4544 1.18276 11.6519 1.92193L11.8636 2.97276C11.9328 3.3211 12.2411 3.57443 12.5961 3.57443C12.9411 3.57443 13.2211 3.85443 13.2211 4.19943C13.2211 4.54443 12.9411 4.82443 12.5961 4.82443Z" />
+                                </svg>
+                              </button>
+                            </td>
+                          </tr>
+
+                          <!-- IF TYPE IS OBJECT -->
+                          @if (isObjectType) {
+                          <tr class="subfields-row">
+                            <td colspan="5" class="p-0">
+                              <div class="subfields-container bg-light py-3 px-1 border-top">
+                                <div class="subfields-header d-flex justify-content-between align-items-center mb-3">
+                                  <button type="button"
+                                    class="btn btn-sm add-field-btn w-100 d-flex fs-sm justify-content-center align-items-center"
+                                    (click)="addSubField(fieldGroup)">
+                                    + Add Property
+                                  </button>
+                                </div>
+                                <div class="subfields-list">
+                                  <table class="table table-sm table-bordered bg-white">
+                                    <thead>
+                                      <tr>
+                                        <th>Key</th>
+                                        <th>Type</th>
+                                        <th>Desc</th>
+                                        <th>Req</th>
+                                        <th>Action</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      @for (subField of getSubFieldsForTemplate(fieldGroup); track $index; let j =
+                                      $index) {
+                                      <tr [formGroup]="subField">
+                                        <td>
+                                          <input type="text" formControlName="field_name" placeholder="Property key"
+                                            class="form-control form-control-sm"
+                                            [class.is-invalid]="subField.get('field_name')?.invalid && subField.get('field_name')?.touched">
+                                        </td>
+                                        <td>
+                                          <select formControlName="type" class="form-select form-select-sm">
+                                            @for (valueType of getValueTypeOptions(); track valueType) {
+                                            <option [value]="valueType">{{ valueType }}</option>
+                                            }
+                                          </select>
+                                        </td>
+                                        <td>
+                                          <input type="text" formControlName="description"
+                                            placeholder="Property description" class="form-control form-control-sm">
+                                        </td>
+                                        <td class="text-center">
+                                          <input type="checkbox" formControlName="required" class="form-check-input">
+                                        </td>
+                                        <td class="text-center">
+                                          <button type="button" class="btn btn-sm btn-outline-danger"
+                                            (click)="removeSubField(fieldGroup, j)" title="Remove property"
+                                            [disabled]="getSubFieldsCount(fieldGroup) <= 1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                              fill="currentColor" viewBox="0 0 16 16">
+                                              <path
+                                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                              <path fill-rule="evenodd"
+                                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                            </svg>
+                                          </button>
+                                        </td>
+                                      </tr>
+                                      }
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                          }
+
+                          <!-- For Array Type Section -->
+                          <!-- For Array Type Section -->
+                          @if (isArrayType) {
+                          @let itemsGroup = getItemsFormGroup(fieldGroup);
+                          @let arrayItemProperties = getArrayItemProperties(fieldGroup);
+
+                          @if (itemsGroup && arrayItemProperties) {
+                          <tr class="array-row">
+                            <td colspan="5" class="p-0">
+                              <div class="array-container bg-light p-3 border-top">
+                                <!-- Header with items type selector -->
+                                <div class="array-header d-flex justify-content-between align-items-center mb-2">
+                                  <h6 class="mb-0">Array Items Schema</h6>
+                                  <select [formControl]="getFormControl(itemsGroup, 'type')"
+                                    class="form-select form-select-sm w-auto">
+                                    @for (t of getValueTypeOptions(fieldGroup); track t) {
+                                    <option [value]="t">{{ t }}</option>
+                                    }
+                                  </select>
+                                </div>
+
+                                <!-- Properties table + Add button: only when items type is Object -->
+                                @if (isArrayObjectType(fieldGroup)) {
+                                @if (arrayItemProperties) {
+                                <div class="array-items-list">
+                                  <table class="table table-sm table-bordered bg-white">
+                                    <thead>
+                                      <tr>
+                                        <th>Property</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Required</th>
+                                        <th>Actions</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      @for (itemProp of arrayItemProperties.controls; track $index; let k = $index) {
+                                      @let itemPropGroup = getFormGroup(itemProp);
+                                      @let propNameControl = getFormControl(itemPropGroup, 'field_name');
+                                      @let propTypeControl = getFormControl(itemPropGroup, 'type');
+                                      @let propDescControl = getFormControl(itemPropGroup, 'description');
+                                      @let propRequiredControl = getFormControl(itemPropGroup, 'required');
+
+                                      <tr>
+                                        <td>
+                                          <input type="text" [formControl]="propNameControl" placeholder="Property name"
+                                            class="form-control form-control-sm">
+                                        </td>
+                                        <td>
+                                          <select [formControl]="propTypeControl" class="form-select form-select-sm">
+                                            @for (valueType of getPrimitiveTypeOptions(); track valueType) {
+                                            <option [value]="valueType">{{ valueType }}</option>
+                                            }
+                                          </select>
+                                        </td>
+                                        <td>
+                                          <input type="text" [formControl]="propDescControl"
+                                            placeholder="Property description" class="form-control form-control-sm">
+                                        </td>
+                                        <td class="text-center">
+                                          <input type="checkbox" [formControl]="propRequiredControl"
+                                            class="form-check-input">
+                                        </td>
+                                        <td class="text-center">
+                                          <button type="button" class="btn btn-sm btn-outline-danger"
+                                            (click)="removeArrayItemProperty(fieldGroup, k)" title="Remove property"
+                                            [disabled]="arrayItemProperties.length <= 1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                              fill="currentColor" viewBox="0 0 16 16">
+                                              <path
+                                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                              <path fill-rule="evenodd"
+                                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                            </svg>
+                                          </button>
+                                        </td>
+                                      </tr>
+                                      }
+                                    </tbody>
+                                  </table>
+                                </div>
+                                }
+                                <div class="mb-2 mt-1">
+                                  <button type="button"
+                                    class="btn btn-sm btn-outline-primary w-100 d-flex fs-sm justify-content-center align-items-center"
+                                    (click)="addArrayItemProperty(fieldGroup)">
+                                    + Add Property
+                                  </button>
+                                </div>
+                                }
+                              </div>
+                            </td>
+                          </tr>
+                          }
+                          }
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+
+                    <!-- Add Field Button -->
+                    <button type="button" (click)="addField()"
+                      class="btn btn-sm add-field-btn w-100 d-flex fs-sm justify-content-center align-items-center mt-3">
+                      + Add Field
+                    </button>
+                  </div>
+                </div>
+                } @else {
+                <div class="raw-json-view">
+                  <h5>Form JSON Data</h5>
+                  <pre class="code-content json-code card p-2 bg-body-secondary">
+                      <code>{{ formatJsonPayload() | json }}</code>
+                    </pre>
+                </div>
+                }
+              </div>
+              <!-- } -->
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="mt-3 d-flex gap-2 justify-content-end">
+            <button type="button" class="btn btn-clear"
+              (click)="this.resetForm(); this.router.navigate(['/main/prompt-template/list'])">Cancel</button>
+            <button type="submit" class="btn btn-gradient" [disabled]="schemaForm.invalid">
+              {{ editingSchema ? 'Update' : 'Save' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- </div> -->
+</div>

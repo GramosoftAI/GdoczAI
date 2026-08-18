@@ -1,0 +1,141 @@
+<div class="container">
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <h3 class="fs-3xl mb-0">Connectors</h3>
+    <button class="btn btn-gradient px-4" (click)="goToCreate()" id="btn-create-connector">
+      Create
+    </button>
+  </div>
+
+  <div class="card rounded-4 p-0 overflow-hidden">
+    @if (isLoading) {
+    <div class="d-flex justify-content-center align-items-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    } @else if (connectors.length === 0) {
+    <div class="empty-state py-5 text-center">
+      <div class="empty-icon mb-3">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <p class="text-muted mb-1">No connectors configured yet.</p>
+      <p class="text-muted small">Click <strong>Create</strong> to set up SFTP or SMTP.</p>
+    </div>
+    } @else {
+    <div class="table-responsive">
+      <table class="table connector-table mb-0">
+        <thead>
+          <tr>
+            <th>TYPE</th>
+            <th>IDENTIFIER</th>
+            <th>HOST / EMAIL</th>
+            <th>INTERVAL (MIN)</th>
+            <th>STATUS</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (connector of connectors; track connector.type) {
+          <tr>
+            <td>
+              <span class="type-badge" [class.sftp]="connector.type === 'SFTP'"
+                [class.smtp]="connector.type === 'SMTP'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="me-1">
+                  @if (connector.type === 'SFTP') {
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                  <line x1="8" y1="21" x2="16" y2="21"></line>
+                  <line x1="12" y1="17" x2="12" y2="21"></line>
+                  } @else {
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                  }
+                </svg>
+                {{ connector.type }}
+              </span>
+            </td>
+            <td class="text-muted">{{ connector.identifier }}</td>
+            <td>{{ connector.hostOrEmail }}</td>
+            <td>{{ connector.intervalMin }}</td>
+            <td>
+              <span class="status-badge" [class.active]="connector.isActive" [class.inactive]="!connector.isActive">
+                <span class="status-dot"></span>
+                {{ connector.isActive ? 'Active' : 'Inactive' }}
+              </span>
+            </td>
+            <td>
+              <div class="d-flex gap-2">
+                <button class="btn btn-sm btn-action-edit" (click)="editConnector(connector)"
+                  [id]="'btn-edit-' + connector.type.toLowerCase()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  Edit
+                </button>
+                <button class="btn btn-sm btn-action-delete" (click)="openDeleteModal(connector)"
+                  [id]="'btn-delete-' + connector.type.toLowerCase()">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                  </svg>
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" [class.show]="showDeleteModal" [style.display]="showDeleteModal ? 'block' : 'none'"
+  style="background: rgba(0, 0, 0, 0.6);" id="modal-delete-connector">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg rounded-3 border-0 mx-3">
+      <div class="modal-header border-0 d-flex justify-content-center bg-dark text-white rounded-top">
+        <h5 class="modal-title d-flex align-items-center gap-2 m-0 fs-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+            class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.964 0l-6.857 11.5c-.457.765.091 1.934.982 1.934h13.714
+                  c.89 0 1.438-1.169.982-1.934l-6.857-11.5zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8
+                  5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+          </svg>
+          Delete Connector
+        </h5>
+      </div>
+      <div class="modal-body text-center p-4 mt-2">
+        <p class="fs-md text-muted">
+          Are you sure you want to delete the
+          <strong>{{ deletingConnector?.type }}</strong> connector?
+          This action cannot be undone.
+        </p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center border-0 gap-2 pb-4">
+        <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" (click)="closeDeleteModal()"
+          id="btn-cancel-delete" [disabled]="isDeleting">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-danger px-4 rounded-pill" (click)="confirmDelete()"
+          id="btn-confirm-delete" [disabled]="isDeleting">
+          @if (isDeleting) {
+          <span class="spinner-border spinner-border-sm me-1"></span>
+          }
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,568 @@
+// promt-template.scss - Add these styles
+.json-editor-container {
+  position: relative;
+}
+
+.json-textarea {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+  line-height: 1.4;
+
+  &:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+  }
+
+  &.is-valid {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+  }
+
+  &.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+}
+
+// Syntax highlighting for JSON preview
+.json-preview {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.875rem;
+  max-height: 200px;
+  overflow-y: auto;
+
+  .json-key {
+    color: #d73a49;
+  }
+
+  .json-string {
+    color: #032f62;
+  }
+
+  .json-number {
+    color: #005cc5;
+  }
+
+  .json-boolean {
+    color: #6f42c1;
+  }
+}
+
+
+.extraction-actions {
+  display: flex;
+  justify-content: center;
+
+  .action-button {
+    background: #3b82f6;
+    border: none;
+    color: white;
+    padding: 0.4rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    &.secondary {
+      background: #6b7280;
+
+      &:hover {
+        background: #4b5563;
+      }
+    }
+  }
+}
+
+
+.extraction-actions {
+  display: flex;
+  justify-content: center;
+
+  .action-button {
+    background: #3b82f6;
+    border: none;
+    color: white;
+    padding: 0.4rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    &.secondary {
+      background: #6b7280;
+
+      &:hover {
+        background: #4b5563;
+      }
+    }
+  }
+}
+
+
+// .....................................EXTRACT TAB STYLES..............................................
+
+.extract-tab-content {
+  padding: 1rem;
+  background: #fff;
+  border-radius: 8px;
+}
+
+.extract-header {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+
+  .extract-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+
+  .extract-subtitle {
+    color: #6c757d;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+}
+
+.no-data-message {
+  text-align: center;
+  padding: 3rem 1rem;
+
+  .alert {
+    max-width: 500px;
+    margin: 0 auto;
+  }
+}
+
+.schema-container {
+  background: #fff;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.extracted-data-preview {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1.5rem;
+
+  .preview-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+  }
+
+  .preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+
+    .preview-card {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: 6px;
+      padding: 1rem;
+      transition: all 0.2s;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .preview-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+
+        .field-name {
+          font-weight: 600;
+          color: #333;
+          font-size: 0.95rem;
+          flex: 1;
+          margin-right: 0.5rem;
+        }
+
+        .field-type {
+          font-size: 0.75rem;
+          padding: 0.25rem 0.5rem;
+          border-radius: 4px;
+          font-weight: 500;
+        }
+      }
+
+      .preview-body {
+        .field-description {
+          color: #6c757d;
+          font-size: 0.875rem;
+          margin-bottom: 0.5rem;
+          line-height: 1.4;
+        }
+
+        .field-meta {
+          .required-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            background: #6c757d;
+            color: white;
+
+            &.required {
+              background: #dc3545;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.extract-tab-content {
+  min-height: 500px;
+  background: #fff;
+}
+
+.schema-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.schema-table {
+  min-width: 120px;
+  width: 100% !important;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  background: #fff;
+
+  thead,
+  tbody {
+    display: table-row-group !important;
+  }
+
+  thead {
+    background-color: #f8f9fa;
+
+    th {
+      padding: 0.75rem 1rem !important;
+      text-align: left;
+      font-weight: 800;
+      color: #495057;
+      font-size: 0.7rem !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  tbody {
+    tr.schema-row {
+      &:not(:last-child) {
+        border-bottom: 1px solid #e9ecef;
+      }
+
+      td {
+        padding: 0.75rem 1rem;
+        vertical-align: middle;
+
+        .form-control,
+        .form-select {
+          min-height: 36px;
+          font-size: 0.75rem !important;
+
+          &.is-invalid {
+            border-color: #dc3545;
+          }
+        }
+
+        .form-check {
+          margin: 0;
+
+          .form-check-input {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+
+            &:checked {
+              background-color: #000000;
+              border-color: #000000;
+            }
+          }
+        }
+
+        .remove-btn {
+          padding: 0.25rem 0.5rem;
+          min-width: 32px;
+
+          &:disabled {
+            opacity: 0.5 !important;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+  }
+
+  tr {
+    display: table-row !important;
+  }
+
+  th,
+  td {
+    display: table-cell !important;
+    padding: 12px !important;
+    border: 1px solid #dee2e6 !important;
+  }
+}
+
+.nav-link {
+  position: relative;
+  color: #666;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.nav-link.active {
+  color: #000;
+}
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+// Add these styles to your playground.scss
+
+.subfields-container {
+  background-color: #f8f9fa;
+  border-top: 2px solid #dee2e6;
+
+  .subfields-header {
+    h6 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+
+      svg {
+        margin-right: 0.25rem;
+      }
+    }
+  }
+
+  .table {
+    margin-bottom: 0;
+
+    th {
+      background-color: #e9ecef;
+      font-size: 0.75rem;
+      padding: 0.5rem;
+    }
+
+    td {
+      padding: 0.5rem;
+      vertical-align: middle;
+
+      .form-control-sm,
+      .form-select-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+  }
+}
+
+.subfields-preview {
+  .subfield-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+
+    .badge {
+      font-size: 0.65rem;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid #dee2e6;
+    }
+  }
+}
+
+// Enhance the remove button styling
+.remove-btn {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  color: #dc3545;
+  transition: all 0.2s;
+
+  &:hover:not(:disabled) {
+    color: #bd2130;
+    transform: scale(1.1);
+  }
+
+  &:disabled {
+    color: #adb5bd;
+    cursor: not-allowed;
+  }
+}
+
+// Style for the add field button
+.add-field-btn {
+  background-color: #f8f9fa;
+  border: 2px dashed #dee2e6 !important;
+  // border-top: none !important;
+  color: #6c757d;
+  transition: all 0.2s;
+  padding: 0.75rem;
+
+  &:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd !important;
+    color: #495057;
+  }
+
+  svg {
+    transition: transform 0.2s;
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
+  }
+}
+
+// Apply button styling
+// .apply-btn {
+//   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+//   border: none;
+//   padding: 0.75rem 1.5rem;
+//   font-weight: 600;
+//   transition: all 0.2s;
+
+//   &:hover:not(:disabled) {
+//     transform: translateY(-1px);
+//     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+//   }
+
+//   &:disabled {
+//     opacity: 0.65;
+//     cursor: not-allowed;
+//   }
+// }
+
+// Responsive adjustments for subfields
+@media (max-width: 768px) {
+  .subfields-container {
+    .table-responsive {
+      display: block;
+      width: 100%;
+      overflow-x: auto;
+
+      .table {
+        min-width: 600px;
+      }
+    }
+  }
+
+  .subfields-preview {
+    .subfield-list {
+      .badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.4rem;
+      }
+    }
+  }
+}
+
+
+
+// ARRAY TAB STYLES
+
+// Add these styles to your SCSS file
+
+.array-container {
+  background-color: #f0f9ff;
+  border-top: 2px solid #93c5fd;
+
+  .array-header {
+    h6 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e40af;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      background: #3b82f6;
+      color: white;
+      border: none;
+
+      &:hover {
+        background: #2563eb;
+      }
+    }
+  }
+
+  .table {
+    margin-bottom: 0;
+
+    th {
+      background-color: #dbeafe;
+      font-size: 0.75rem;
+      padding: 0.5rem;
+      color: #1e40af;
+    }
+
+    td {
+      padding: 0.5rem;
+      vertical-align: middle;
+
+      .form-control-sm,
+      .form-select-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+      }
+    }
+  }
+}
+
+// Different background for array rows
+.array-row {
+  background-color: #f0f9ff;
+}
+
+// Different background for object rows
+.subfields-row {
+  background-color: #f9fafb;
+}

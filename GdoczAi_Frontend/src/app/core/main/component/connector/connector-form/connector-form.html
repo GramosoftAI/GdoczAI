@@ -1,0 +1,324 @@
+<div class="container">
+  <div class="d-flex align-items-center mb-4 gap-2">
+    <button class="btn btn-sm btn-back" (click)="cancel()" id="btn-back-connectors">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    <div>
+      <h3 class="fs-3xl mb-0">{{ isEditMode ? 'Edit' : 'SFTP Connector' }}</h3>
+      @if (!isEditMode) {
+      <p class="text-muted mb-0 fs-sm">Secure File Transfer Protocol configuration</p>
+      }
+    </div>
+  </div>
+
+  <div class="card rounded-4 p-4">
+    <!-- Tabs -->
+    <div class="connector-tabs mb-4">
+      <button class="tab-btn" [class.active]="activeTab === 'SFTP'" (click)="setTab('SFTP')"
+        id="tab-sftp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+        SFTP
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'SMTP'" (click)="setTab('SMTP')"
+        id="tab-smtp">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        SMTP
+      </button>
+    </div>
+
+    <!-- ==================== SFTP FORM ==================== -->
+    @if (activeTab === 'SFTP') {
+    <form [formGroup]="sftpForm" (ngSubmit)="onSftpSubmit()">
+
+      <!-- Connection Settings -->
+      <div class="section-divider mb-3">
+        <span class="section-label">CONNECTION SETTINGS</span>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-md-8">
+          <label for="sftp-host" class="form-label">Host Name <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="sftp-host" formControlName="host_name"
+            [class.is-invalid]="isSftpFieldInvalid('host_name')"
+            placeholder="e.g. 72.60.205.230 or sftp.example.com">
+          @if (isSftpFieldInvalid('host_name')) {
+          <div class="invalid-feedback d-block">Host name is required</div>
+          }
+        </div>
+        <div class="col-md-4">
+          <label for="sftp-port" class="form-label">Port <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" id="sftp-port" formControlName="port"
+            [class.is-invalid]="isSftpFieldInvalid('port')" placeholder="22">
+          @if (isSftpFieldInvalid('port')) {
+          <div class="invalid-feedback d-block">Enter a valid port (1–65535)</div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="sftp-username" class="form-label">Username <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="sftp-username" formControlName="username"
+            [class.is-invalid]="isSftpFieldInvalid('username')" placeholder="e.g. root">
+          @if (isSftpFieldInvalid('username')) {
+          <div class="invalid-feedback d-block">Username is required</div>
+          }
+        </div>
+        <div class="col-md-6">
+          <label for="sftp-password" class="form-label">Password</label>
+          <div class="input-group">
+            <input [type]="showPassword ? 'text' : 'password'" class="form-control" id="sftp-password"
+              formControlName="password" placeholder="Leave blank to keep unchanged">
+            <button type="button" class="btn btn-outline-secondary" (click)="showPassword = !showPassword"
+              id="btn-toggle-sftp-password">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                @if (showPassword) {
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+                } @else {
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+                }
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PEM File -->
+      <div class="mb-4">
+        <label for="sftp-pem" class="form-label">PEM Key File <span class="text-muted fw-normal">(optional)</span></label>
+        <div class="pem-upload-area">
+          <input type="file" class="d-none" id="sftp-pem" accept=".pem,.key,.ppk"
+            (change)="onPemFileChange($event)">
+          <label for="sftp-pem" class="pem-label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <span>{{ selectedPemFile ? selectedPemFile.name : 'Choose File' }}</span>
+            @if (!selectedPemFile) {
+            <span class="pem-none-text ms-2">No file chosen</span>
+            }
+          </label>
+        </div>
+        <div class="form-text mt-1">SSH private key (.pem / .key / .ppk)</div>
+      </div>
+
+      <!-- Folder Settings -->
+      <div class="section-divider mb-3">
+        <span class="section-label">FOLDER SETTINGS</span>
+      </div>
+      <div class="mb-3">
+        <label for="sftp-monitor" class="form-label">Monitor Folders <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="sftp-monitor" formControlName="monitor_folders"
+          [class.is-invalid]="isSftpFieldInvalid('monitor_folders')"
+          placeholder="e.g. /home/ubuntu/invoices, /home/ubuntu/tax_docs">
+        <div class="form-text">Comma-separated list of folders to watch.</div>
+        @if (isSftpFieldInvalid('monitor_folders')) {
+        <div class="invalid-feedback d-block">Monitor folders are required</div>
+        }
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label for="sftp-moved" class="form-label">Moved Folder <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="sftp-moved" formControlName="moved_folder"
+            [class.is-invalid]="isSftpFieldInvalid('moved_folder')"
+            placeholder="/home/ubuntu/Moved_folder">
+          @if (isSftpFieldInvalid('moved_folder')) {
+          <div class="invalid-feedback d-block">Moved folder is required</div>
+          }
+        </div>
+        <div class="col-md-6">
+          <label for="sftp-failed" class="form-label">Failed Folder <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="sftp-failed" formControlName="failed_folder"
+            [class.is-invalid]="isSftpFieldInvalid('failed_folder')"
+            placeholder="/home/ubuntu/Failed_files">
+          @if (isSftpFieldInvalid('failed_folder')) {
+          <div class="invalid-feedback d-block">Failed folder is required</div>
+          }
+        </div>
+      </div>
+
+      <!-- Scheduling -->
+      <div class="section-divider mb-3">
+        <span class="section-label">SCHEDULING</span>
+      </div>
+      <div class="row g-3 align-items-center mb-4">
+        <div class="col-md-6">
+          <label for="sftp-interval" class="form-label">Poll Interval (minutes) <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" id="sftp-interval" formControlName="interval_minute"
+            [class.is-invalid]="isSftpFieldInvalid('interval_minute')" min="1">
+          @if (isSftpFieldInvalid('interval_minute')) {
+          <div class="invalid-feedback d-block">Interval must be at least 1 minute</div>
+          }
+        </div>
+        <div class="col-md-6 d-flex align-items-center mt-md-4">
+          <label class="minimal-toggle" for="sftp-active">
+            <input type="checkbox" id="sftp-active" formControlName="is_active">
+            <div class="toggle"></div>
+            <span>Connector Active</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex justify-content-end gap-3">
+        <button type="button" class="btn btn-outline-secondary px-4" (click)="cancel()" id="btn-sftp-cancel">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-gradient px-4" [disabled]="isSubmitting" id="btn-sftp-save">
+          @if (isSubmitting) {
+          <span class="spinner-border spinner-border-sm me-1"></span>
+          }
+          {{ hasSftpData ? 'Update SFTP' : 'Save SFTP' }}
+        </button>
+      </div>
+    </form>
+    }
+
+    <!-- ==================== SMTP FORM ==================== -->
+    @if (activeTab === 'SMTP') {
+    <form [formGroup]="smtpForm" (ngSubmit)="onSmtpSubmit()">
+
+      <!-- Email Method -->
+      <div class="mb-4">
+        <label class="form-label">Email Method <span class="text-danger">*</span></label>
+        <div class="email-method-group">
+          @for (option of emailMethodOptions; track option.value) {
+          <button type="button" class="method-btn" [class.active]="emailMethod === option.value"
+            (click)="setEmailMethod(option.value)" [id]="'btn-method-' + option.value">
+            {{ option.label }}
+          </button>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label for="smtp-email" class="form-label">Email ID <span class="text-danger">*</span></label>
+          <input type="email" class="form-control" id="smtp-email" formControlName="email_id"
+            [class.is-invalid]="isSmtpFieldInvalid('email_id')" placeholder="yourname@gmail.com">
+          @if (isSmtpFieldInvalid('email_id')) {
+          <div class="invalid-feedback d-block">Enter a valid email address</div>
+          }
+        </div>
+        <div class="col-md-6">
+          <label for="smtp-password" class="form-label">App Password <span class="text-danger">*</span></label>
+          <div class="input-group">
+            <input [type]="showSmtpPassword ? 'text' : 'password'" class="form-control" id="smtp-password"
+              formControlName="app_password" [class.is-invalid]="isSmtpFieldInvalid('app_password')"
+              placeholder="App-specific password">
+            <button type="button" class="btn btn-outline-secondary" (click)="showSmtpPassword = !showSmtpPassword"
+              id="btn-toggle-smtp-password">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                @if (showSmtpPassword) {
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+                } @else {
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+                }
+              </svg>
+            </button>
+          </div>
+          @if (emailMethod === 'gmail') {
+          <div class="form-text">
+            Use a Gmail App Password.
+            <a href="https://myaccount.google.com/apppasswords" target="_blank" class="link-gradient">
+              Generate ↗
+            </a>
+          </div>
+          }
+          @if (isSmtpFieldInvalid('app_password')) {
+          <div class="invalid-feedback d-block">App password is required</div>
+          }
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="smtp-senders" class="form-label">Approved Senders <span class="text-danger">*</span></label>
+        <input type="text" class="form-control" id="smtp-senders" formControlName="approved_senders"
+          [class.is-invalid]="isSmtpFieldInvalid('approved_senders')"
+          placeholder="e.g. client1@gmail.com, client2@company.com">
+        <div class="form-text">Comma-separated email addresses allowed to send documents.</div>
+        @if (isSmtpFieldInvalid('approved_senders')) {
+        <div class="invalid-feedback d-block">Approved senders are required</div>
+        }
+      </div>
+
+      @if (emailMethod === 'custom') {
+      <div class="row g-3 mb-3">
+        <div class="col-md-8">
+          <label for="smtp-imap-server" class="form-label">IMAP Server <span class="text-danger">*</span></label>
+          <input type="text" class="form-control" id="smtp-imap-server" formControlName="imap_server"
+            [class.is-invalid]="isSmtpFieldInvalid('imap_server')" placeholder="imap.example.com">
+          @if (isSmtpFieldInvalid('imap_server')) {
+          <div class="invalid-feedback d-block">IMAP server is required</div>
+          }
+        </div>
+        <div class="col-md-4">
+          <label for="smtp-imap-port" class="form-label">IMAP Port <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" id="smtp-imap-port" formControlName="imap_port"
+            [class.is-invalid]="isSmtpFieldInvalid('imap_port')" placeholder="993">
+          @if (isSmtpFieldInvalid('imap_port')) {
+          <div class="invalid-feedback d-block">IMAP port is required</div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Scheduling -->
+      <div class="section-divider mb-3 mt-4">
+        <span class="section-label">SCHEDULING</span>
+      </div>
+      <div class="row g-3 align-items-center mb-4">
+        <div class="col-md-6">
+          <label for="smtp-interval" class="form-label">Poll Interval (minutes) <span class="text-danger">*</span></label>
+          <input type="number" class="form-control" id="smtp-interval" formControlName="interval_minute"
+            [class.is-invalid]="isSmtpFieldInvalid('interval_minute')" min="1">
+          @if (isSmtpFieldInvalid('interval_minute')) {
+          <div class="invalid-feedback d-block">Interval must be at least 1 minute</div>
+          }
+        </div>
+        <div class="col-md-6 d-flex align-items-center mt-md-4">
+          <label class="minimal-toggle" for="smtp-active">
+            <input type="checkbox" id="smtp-active" formControlName="is_active">
+            <div class="toggle"></div>
+            <span>Connector Active</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="d-flex justify-content-end gap-3">
+        <button type="button" class="btn btn-outline-secondary px-4" (click)="cancel()" id="btn-smtp-cancel">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-gradient px-4" [disabled]="isSubmitting" id="btn-smtp-save">
+          @if (isSubmitting) {
+          <span class="spinner-border spinner-border-sm me-1"></span>
+          }
+          {{ hasSmtpData ? 'Update SMTP' : 'Save SMTP' }}
+        </button>
+      </div>
+    </form>
+    }
+  </div>
+</div>

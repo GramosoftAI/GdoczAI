@@ -1,0 +1,69 @@
+.subscription-card {
+  background: linear-gradient(197deg, #78C1F5 -5.65%, #3366FC 27.78%, #0026E3 88.24%);
+  // background: linear-gradient(96.87deg, #0025B5 6.66%, #054A91 82.11%);
+  border-radius: 18px;
+  border: 1px solid #e5e5f9;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.02);
+  padding: 30px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-block {
+  border-radius: 18px;
+  border: 1px solid #D2D7E3;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 9.7px 0px #D0DEE6;
+  padding: 30px;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-block a {
+  border-width: 0px, 0px, 0px, 0px;
+  border-style: solid;
+  border-color: #054A91;
+  text-decoration: none;
+}
+
+.resource-card {
+  background: #fff;
+  border: 1px solid #e5e5f9;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+  height: 100%;
+}
+
+.resource-card:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .subscription-card,
+  .dashboard-block {
+    padding: 24px;
+    min-height: auto;
+  }
+
+  .grid-cols-1 {
+    grid-template-columns: 1fr;
+  }
+
+  .lg\:grid-cols-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.background-resource-card {
+  background: #FFFFFF;
+  border: 1px solid #D2D7E3;
+  box-shadow: 0px 2px 9.7px 0px #D0DEE65E;
+  border-radius: 8px;
+}

@@ -1,0 +1,195 @@
+// Tabs
+.connector-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #e9ecef;
+
+  .tab-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+
+    &:hover:not(.active) {
+      color: #495057;
+    }
+  }
+}
+
+// Section dividers
+.section-divider {
+  position: relative;
+  text-align: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e9ecef;
+  }
+
+  .section-label {
+    position: relative;
+    background: #fff;
+    padding: 0 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #9ca3af;
+  }
+}
+
+// Toggle
+.minimal-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+
+  input {
+    display: none;
+  }
+}
+
+.toggle {
+  width: 50px;
+  height: 24px;
+  background: #ddd;
+  border-radius: 12px;
+  position: relative;
+  transition: all 0.3s;
+
+  &:after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: white;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.minimal-toggle input:checked + .toggle {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.minimal-toggle input:checked + .toggle:after {
+  transform: translateX(26px);
+}
+
+.minimal-toggle span {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+// Back button
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  background: #fff;
+  color: #6c757d;
+  padding: 0;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
+    color: #667eea;
+  }
+}
+
+// PEM upload
+.pem-upload-area {
+  .pem-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: #495057;
+    transition: border-color 0.2s;
+
+    &:hover {
+      border-color: #667eea;
+      color: #667eea;
+    }
+  }
+
+  .pem-none-text {
+    color: #adb5bd;
+    font-size: 0.875rem;
+  }
+}
+
+// Email method buttons
+.email-method-group {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  .method-btn {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+    }
+
+    &:hover:not(.active) {
+      border-color: #667eea;
+      color: #667eea;
+    }
+  }
+}
+
+// Gradient link
+.link-gradient {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-decoration: none;
+  font-weight: 600;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

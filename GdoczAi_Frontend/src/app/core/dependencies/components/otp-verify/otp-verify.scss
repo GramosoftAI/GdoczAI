@@ -1,0 +1,156 @@
+.modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .modal-header {
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-title {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-close:hover {
+      color: #374151;
+      background-color: #f3f4f6;
+      border-radius: 50%;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .otp-instruction {
+      margin-bottom: 1rem;
+      color: #6b7280;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .otp-container {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+
+    // .resend-section {
+    //   margin: 1.5rem 0;
+    // }
+
+    .btn-resend {
+      background: none;
+      border: 1px solid #909fb1;
+      color: #054A91;
+      cursor: pointer;
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-resend:hover:not(:disabled) {
+      background-color: #eff6ff;
+    }
+
+    .btn-resend:disabled {
+      color: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .countdown-text {
+      color: #6b7280;
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      padding-top: 1.5rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #2563eb;
+    }
+
+    .btn-primary:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #f3f4f6;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .btn-secondary:hover {
+      background: #e5e7eb;
+    }
+
+    .error-message {
+      color: #dc2626;
+      background-color: #fef2f2;
+      padding: 0.75rem;
+      border-radius: 6px;
+      border: 1px solid #fecaca;
+      font-size: 0.875rem;
+    }
+
+    .text-sm {
+      font-size: 0.875rem;
+    }

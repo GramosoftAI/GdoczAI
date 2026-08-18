@@ -1,0 +1,55 @@
+<div>
+  <h3 class="fs-3xl">Usage</h3>
+  <p class="fs-xl">An overview of your past activity</p>
+  <div class="table-boundary dl-glow-border text-sm">
+    <table class="inline-table w-auto table-auto">
+      <thead>
+        <tr>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Created</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Request ID</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Filename</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Pages</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Duration</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Processed On</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Status</th>
+          <th class="px-8 py-4 text-left fs-sm fw-500 theme-color whitespace-normal">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (item of usages; track $index) {
+          <tr>
+          <td class="px-8 py-4 text-left whitespace-normal">{{item.created_at}}</td>
+          <td class="px-8 py-4 text-left whitespace-normal">{{item.request_id}}</td>
+          <td class="px-8 py-4 text-left whitespace-normal">
+            <div class="max-w-xs truncate" title="{{item.file_name}}">{{item.file_name}}</div>
+          </td>
+          <td class="px-8 py-4 text-left whitespace-normal">{{item.pages}}</td>
+          <td class="px-8 py-4 text-left whitespace-normal">{{item.processing_duration | number:'1.2-2'}}</td>
+          <td class="px-8 py-4 text-left whitespace-normal">{{item.processed_on | date:'short'}}</td>
+          <td scope="row" style="cursor: default;">
+            <span class="badge text-capitalize" [class.bg-green]="item.status === 'completed'" [class.bg-red]="item.status === 'pending'">
+              {{ item.status}}
+            </span>
+          </td>
+          <td class="px-8 py-4 text-left whitespace-normal">
+            <a data-slot="button" (click)="goToPlayground(item.id)"
+              class="btn btn-blue p-1 txt-secondary fs-xsm">View In Playground
+              <svg viewBox="0 0 24 24" width="1.2em" height="1.2em">
+                <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6m-7 1l9-9m-5 0h5v5"></path>
+              </svg>
+            </a>
+          </td>
+        </tr>
+        }@empty {
+            <tr>
+              <td colspan="8" class="px-8 py-4 text-center text-muted">No data available. Please parse a document first.
+                <a routerLink="/main/playground" type="button" class="text-primary text-decoration-none cursor-pointer">Parse Document</a>
+              </td>
+            </tr>
+            }
+      </tbody>
+    </table>
+  </div>
+</div>

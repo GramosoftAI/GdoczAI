@@ -1,0 +1,930 @@
+@if (mode !== 'demo') {
+<header class="custom-toolbar">
+  <span class="toolbar-item-spacer"></span>
+  <button class="btn border-0 px-0 head-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+    aria-label="User Account Menu">
+    <div class="fs-lg">Forge <b (click)="selectedFile = null; fileUpload = false">Playground</b></div>
+  </button>
+</header>
+}
+
+<div class="file-upload-container">
+
+  <!-- Hidden file input always present -->
+  <input type="file" id="fileInput" class="file-input" (change)="onFileSelected($event)"
+    accept=".pdf,.png,.jpeg,.jpg,.webp,.bmp">
+
+  <!-- Drop Zone: shown when no file selected and not in result view -->
+  @if (!selectedFile && !fileUpload) {
+  <div class="upload-section mx-auto" [class.dragging]="isDragging" (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)" (drop)="onDrop($event)" (click)="triggerFileInput()">
+
+    <div class="row d-flex w-100 h-100 justify-content-between align-items-center">
+      <div class="col-lg-5 drop-zone-content text-center w-50">
+        <div class="upload-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7,10 12,15 17,10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+        </div>
+        <h3 class="fs-xl upload-title">Drag and drop your document here</h3>
+        <p class="upload-subtitle fs-md">or
+          <span class="txt-primary text-decoration-underline">click to browse</span>
+        </p>
+      </div>
+
+      <div class="col-md-1 divider"></div>
+
+      <div class="col-lg-4 supported-formats d-lg-block d-grid justify-content-center">
+        <div>
+          <h4 class="fs-sm fw-500 text-start">Supported formats</h4>
+          <table class="format-table w-100">
+            <tbody>
+              <tr class="text-start">
+                <td class="fs-xsm py-1 theme-color fw-500">Documents</td>
+                <td class="fs-xsm py-1 theme-color">PDF</td>
+              </tr>
+              <tr class="text-start">
+                <td class="fs-xsm py-1 theme-color fw-500">Images*</td>
+                <td class="fs-xsm py-1 theme-color">PNG, JPEG, JPG, WEBP, bmp</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-3">
+          <p class="txt-tertiary">* Only the mentioned file formats are fully supported.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Page-Wise Selection UI: shown after file is chosen, before result view -->
+  @if (selectedFile && !fileUpload) {
+  <div class="page-select-container mx-auto">
+
+    <!-- Header row -->
+    <div class="page-select-header">
+      <div class="page-select-file-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14,2 14,8 20,8"></polyline>
+        </svg>
+        <span class="page-select-filename" [title]="selectedFile.name">{{ selectedFile.name }}</span>
+        <span class="page-select-size">({{ formatFileSize(selectedFile.size) }})</span>
+      </div>
+      <button class="change-document-btn" (click)="changeDocument()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"></path>
+        </svg>
+        Change Document
+      </button>
+    </div>
+
+    <!-- Main content: left = preview & enhancements, right = mode + parse -->
+    <div class="page-select-body d-flex gap-4 align-items-stretch mt-3 row">
+
+      <!-- LEFT SIDE: Preview & Enhancements -->
+      <div class="col-6 page-left-panel d-flex flex-column" style="flex: 0 0 60%; min-width: 0;">
+
+        <!-- Top Control Bar (Left Side only) -->
+        <div
+          class="page-select-top-bar d-flex flex-wrap justify-content-between align-items-center bg-white p-3 rounded-3 border mb-3 gap-3">
+          <!-- Pagination Controls -->
+          <div class="pagination-controls d-flex align-items-center gap-2">
+            <button class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+              (click)="prevPage()" [disabled]="!documentPages.length || selectedPreviewPage?.pageNumber === 1"
+              style="width: 32px; height: 32px; padding: 0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+            <span class="fs-sm fw-500 mx-2 text-nowrap" style="min-width: 100px; text-align: center;">
+              @if (selectedPreviewPage) {
+              Page {{ selectedPreviewPage.pageNumber }} of {{ documentPages.length }}
+              } @else {
+              No page selected
+              }
+            </span>
+            <button class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+              (click)="nextPage()"
+              [disabled]="!documentPages.length || selectedPreviewPage?.pageNumber === documentPages.length"
+              style="width: 32px; height: 32px; padding: 0;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Thumbnails Toggle -->
+          <div class="action-controls d-flex align-items-center gap-3">
+            <button class="btn btn-sm btn-light border" (click)="toggleThumbnails()">
+              {{ showThumbnails ? 'Hide Thumbnails' : 'Show Thumbnails' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- TOP: Conditional Thumbnails Strip -->
+        @if (showThumbnails && documentPages.length > 0) {
+        <div class="top-thumbnail-strip mb-3 bg-white p-3 rounded-3 border w-100">
+          <div class="page-strip-header mb-2 d-flex align-items-center">
+            <span class="page-strip-title fs-sm fw-600 d-flex align-items-center gap-2">
+              Document Pages <span class="page-count-badge bg-primary text-white px-2 py-1 rounded-pill"
+                style="font-size: 0.7rem;">{{ documentPages.length }}</span>
+            </span>
+            @if (isExtractingPages) {
+            <div class="page-strip-loading ms-3 d-flex align-items-center text-muted fs-xsm">
+              <div class="spinner-small" style="width: 14px; height: 14px; border-width: 2px;"></div>
+              <span class="ms-1">Extracting remaining pages...</span>
+            </div>
+            }
+          </div>
+          <div class="page-strip w-100 d-flex gap-2 pb-2" style="overflow-x: auto;">
+            @for (page of documentPages; track page.pageNumber) {
+            <div class="page-thumb-card flex-shrink-0"
+              [class.previewing]="selectedPreviewPage?.pageNumber === page.pageNumber"
+              (click)="selectPagePreview(page)">
+              <div class="page-thumb-img-wrap border rounded bg-light"
+                style="width: 70px; height: 95px; overflow: hidden; position: relative;"
+                [style.border-color]="selectedPreviewPage?.pageNumber === page.pageNumber ? 'var(--primary-color, #3b82f6)' : '#e5e7eb'">
+                <img [src]="page.thumbnail" class="page-thumb-img w-100 h-100" style="object-fit: cover;"
+                  alt="Page {{ page.pageNumber }}" />
+              </div>
+              <span class="page-thumb-label mt-1 text-center d-block text-muted" style="font-size: 0.65rem;">Page {{
+                page.pageNumber }}</span>
+            </div>
+            }
+          </div>
+        </div>
+        }
+
+        <!-- MAIN: large preview of selected page -->
+        <div class="page-preview-panel w-100 flex-grow-1 position-relative"
+          style="height: 70vh; border: 1px solid #e5e7eb; border-radius: 12px; background: #f8fafc; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+          @if (selectedPreviewPage) {
+          <div
+            class="page-preview-image-wrap position-absolute top-0 start-0 w-100 h-100 p-3 d-flex align-items-center justify-content-center">
+            <img [src]="selectedPreviewPage.thumbnail" class="page-preview-large w-100 h-100"
+              style="object-fit: contain; max-width: 100%; max-height: 100%;" alt="Page preview" />
+          </div>
+          } @else if (isExtractingPages) {
+          <div class="page-preview-loading d-flex flex-column align-items-center gap-2 p-5 text-muted">
+            <div class="spinner-small"
+              style="width: 20px; height: 20px; border: 2px solid #e5e7eb; border-left-color: var(--primary-color, #3b82f6); border-radius: 50%; animation: spin 0.8s linear infinite;">
+            </div>
+            <span>Rendering pages...</span>
+          </div>
+          } @else {
+          <div class="page-preview-empty d-flex flex-column align-items-center gap-2 p-5 text-muted">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21,15 16,10 5,21"></polyline>
+            </svg>
+            <p>Select a page to preview</p>
+          </div>
+          }
+        </div>
+
+      </div> <!-- End LEFT SIDE -->
+
+      <!-- RIGHT SIDE: Mode & Parse Actions -->
+      <div class="col-6 page-select-right border rounded-3 p-4 bg-white" style="flex: 1;">
+        <!-- Mode selector -->
+        @if (mode !== 'demo') {
+        <form [formGroup]="schemaForm" class="w-100">
+          <div class="top-section d-flex my-3 gap-3 align-items-baseline">
+            <div class="page-range-group">
+              <label class="form-label" for="page_range">Page Range</label>
+            </div>
+            <div class="page-range-input">
+              <input data-slot="input" class="border px-3 py-1 rounded-2" type="text" id="page_range"
+                placeholder="e.g. 0-2,4" formControlName="page_range">
+            </div>
+          </div>
+          <div class="mode-section">
+            <h5 class="fs-sm fw-600 mb-3 selection-title">Select Mode</h5>
+            <div class="row d-flex flex-row">
+              <div class="col-4">
+                <label
+                  class="mb-3 mode-option h-100 w-100 border p-3 rounded-2 cursor-pointer position-relative d-block"
+                  [style.border-color]="schemaForm.get('model')?.value === 'standard' ? 'var(--primary-color, #3b82f6)' : '#e5e7eb'"
+                  [style.background]="schemaForm.get('model')?.value === 'standard' ? '#eff6ff' : '#fff'">
+                  <div class="d-flex align-items-baseline justify-content-between">
+                    <h4 class="fs-sm mb-1 fw-600">Standard</h4>
+                    <input type="radio" name="model" value="standard" formControlName="model" class="form-check-input">
+                  </div>
+                  <span class="option-label">
+                    <p class="fs-xsm text-muted mb-0">Optimized for fast and consistent parsing.</p>
+                  </span>
+                </label>
+              </div>
+              <div class="col-4">
+                <label class="mode-option h-100 w-100 border p-3 rounded-2 cursor-pointer position-relative d-block"
+                  [style.border-color]="schemaForm.get('model')?.value === 'intelligent' ? 'var(--primary-color, #3b82f6)' : '#e5e7eb'"
+                  [style.background]="schemaForm.get('model')?.value === 'intelligent' ? '#eff6ff' : '#fff'">
+                  <div class="d-flex align-items-baseline justify-content-between">
+                    <h4 class="fs-sm mb-1 fw-600">Intelligent</h4>
+                    <input type="radio" name="model" value="intelligent" formControlName="model" class="form-check-input">
+                  </div>
+                  <span class="option-label">
+                    <p class="fs-xsm text-muted mb-0">High-precision extraction for tough layouts.</p>
+                  </span>
+                </label>
+              </div>
+              <div class="col-4">
+                <label class="mode-option h-100 w-100 border p-3 rounded-2 cursor-pointer position-relative d-block"
+                  [style.border-color]="schemaForm.get('model')?.value === 'accurate' ? 'var(--primary-color, #3b82f6)' : '#e5e7eb'"
+                  [style.background]="schemaForm.get('model')?.value === 'accurate' ? '#eff6ff' : '#fff'">
+                  <div class="d-flex align-items-baseline justify-content-between">
+                    <h4 class="fs-sm mb-1 fw-600">Accurate</h4>
+                    <input type="radio" name="model" value="accurate" formControlName="model" class="form-check-input">
+                  </div>
+                  <span class="option-label">
+                    <p class="fs-xsm text-muted mb-0">Deep validation for maximum accuracy results.</p>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="hor-divider my-4 border-top w-100"></div>
+
+          <!-- Parse button -->
+          <div class="page-select-actions mt-auto w-100">
+            <button
+              class="btn btn-primary w-100 py-3 fw-600 d-flex align-items-center justify-content-center parse-button"
+              (click)="parseDocument()" [disabled]="isLoading || !selectedFile"
+              style="background: var(--primary-color, #3b82f6); color: white; border-radius: 8px;">
+              @if (isLoading) {
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              Parsing...
+              } @else {
+              Parse Document
+              }
+            </button>
+          </div>
+        </form>
+        } @else if (mode === 'demo') {
+        <div class="page-select-actions mt-auto w-100">
+          <button
+            class="btn btn-primary w-100 py-3 fw-600 d-flex align-items-center justify-content-center parse-button"
+            (click)="parseDocument()" [disabled]="isLoading || !selectedFile"
+            style="background: var(--primary-color, #3b82f6); color: white; border-radius: 8px;">
+            @if (isLoading) {
+            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            Parsing...
+            } @else {
+            Parse Document
+            }
+          </button>
+        </div>
+        }
+      </div> <!-- End RIGHT SIDE -->
+
+    </div>
+  </div>
+  }
+
+  <!-- Loading Overlay -->
+  @if (isLoading) {
+  <div class="loading-overlay">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Parsing document...</p>
+    </div>
+  </div>
+  }
+
+  <!-- Result View After Parsing -->
+  @if ((selectedFile && fileUpload) || apiResponse) {
+  <div class="result-container">
+    <div class="row h-100 result-container-row flex-nowrap overflow-hidden">
+
+      <!-- Left Side - Document Viewer (60% width) -->
+      <div class="col-6 document-viewer-section d-flex flex-column h-100" style="flex: 0 0 60%; min-width: 0;">
+        <h5 class="document-title my-2 text-start">Document Preview</h5>
+        <div class="document-header">
+          <div class="document-controls">
+            @if (documentPages.length > 0) {
+            <div class="pagination-controls d-flex align-items-center gap-2 me-3">
+              <button class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+                (click)="prevPage()" [disabled]="!documentPages.length || selectedPreviewPage?.pageNumber === 1"
+                style="width: 23px; height: 23px; padding: 0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+              </button>
+              <span class="fs-sm fw-500 mx-2 text-nowrap" style="min-width: 45px; text-align: center;">
+                Page {{ selectedPreviewPage?.pageNumber }} / {{ documentPages.length }}
+              </span>
+              <button class="btn btn-sm btn-outline-secondary d-flex align-items-center justify-content-center"
+                (click)="nextPage()"
+                [disabled]="!documentPages.length || selectedPreviewPage?.pageNumber === documentPages.length"
+                style="width: 23px; height: 23px; padding: 0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </button>
+            </div>
+            <button class="btn btn-sm btn-light border me-3" (click)="toggleThumbnails()">
+              {{ showThumbnails ? 'Hide Thumbnails' : 'Show Thumbnails' }}
+            </button>
+            }
+
+            @if (documentType === 'image') {
+            <div class="image-controls">
+              <button class="control-button" (click)="zoomOut()" title="Zoom Out">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+              </button>
+              <span class="zoom-level">{{ imageZoom }}%</span>
+              <button class="control-button" (click)="zoomIn()" title="Zoom In">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  <line x1="11" y1="8" x2="11" y2="14"></line>
+                  <line x1="8" y1="11" x2="14" y2="11"></line>
+                </svg>
+              </button>
+            </div>
+            }
+            <button class="back-button" (click)="resetFileState()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5"></path>
+                <path d="M12 19l-7-7 7-7"></path>
+              </svg>
+              New File
+            </button>
+          </div>
+        </div>
+
+        <div class="document-content p-0 overflow-hidden flex-grow-1 position-relative" style="background: #f1f5f9;">
+          @if (showThumbnails && documentPages.length > 0) {
+          <div class="result-thumbnail-popup shadow-lg border-end">
+            <div class="popup-header d-flex justify-content-between align-items-center p-2 border-bottom bg-light">
+              <span class="fs-xsm fw-700">Pages ({{ documentPages.length }})</span>
+              <button class="btn btn-link p-0 text-muted" (click)="toggleThumbnails()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 6L6 18M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+            <div class="popup-body p-2 d-flex flex-column gap-3 overflow-auto h-100">
+              @for (page of documentPages; track page.pageNumber) {
+              <div class="page-thumb-card w-100 m-0"
+                [class.previewing]="selectedPreviewPage?.pageNumber === page.pageNumber"
+                (click)="selectPagePreview(page)">
+                <div class="page-thumb-img-wrap border rounded bg-light w-100"
+                  style="height: 100px; overflow: hidden; position: relative;"
+                  [style.border-color]="selectedPreviewPage?.pageNumber === page.pageNumber ? 'var(--primary-color, #3b82f6)' : '#e5e7eb'">
+                  <img [src]="page.thumbnail" class="page-thumb-img w-100 h-100" style="object-fit: contain;"
+                    alt="Page {{ page.pageNumber }}" />
+                  <div class="page-badge position-absolute top-0 start-0 bg-dark bg-opacity-50 text-white px-1 fs-xsm"
+                    style="border-bottom-right-radius: 4px;">{{ page.pageNumber }}</div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+          }
+
+          @if (selectedPreviewPage && !isDocumentLoading) {
+          <div class="page-preview-panel w-100 h-100 position-relative border-0 rounded-0 bg-transparent"
+            style="display: flex; align-items: center; justify-content: center;">
+            <div class="page-preview-image-wrap w-100 h-100 p-3 d-flex align-items-center justify-content-center">
+              <img [src]="selectedPreviewPage.thumbnail" class="page-preview-large"
+                style="object-fit: contain; max-width: 100%; max-height: 100%; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 4px;"
+                [style.transform]="documentType === 'image' ? 'scale(' + (imageZoom / 100) + ') rotate(' + imageRotation + 'deg)' : 'none'"
+                alt="Page preview" />
+            </div>
+            <div
+              class="document-info position-absolute bottom-0 start-0 w-100 p-2 d-flex justify-content-between align-items-center bg-dark bg-opacity-75 text-white"
+              style="z-index: 10;">
+              <span class="document-filename fs-xsm text-truncate ms-2">{{ documentFileName }}</span>
+              <button class="btn btn-sm btn-primary py-1 px-2 me-2" (click)="downloadFile()" style="font-size: 0.7rem;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  class="me-1">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download
+              </button>
+            </div>
+          </div>
+          }
+          @else if (isDocumentLoading) {
+          <div class="document-loading">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading document...</span>
+            </div>
+            <p>Loading document...</p>
+          </div>
+          }
+          @else if (documentError) {
+          <div class="document-error">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <h5>Document Not Available</h5>
+            <p>{{ documentError }}</p>
+          </div>
+          }
+          @else {
+          <div class="no-document">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            <h5>No Document Available</h5>
+            <p>Parse a document to view it here</p>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Right Side - Parse & Extract tabs (40% width) -->
+      <!-- FIX: output-section uses min-height:0 so flex children can shrink properly -->
+      <div class="col-6 output-section d-flex flex-column h-100" style="flex: 1; min-width: 0; min-height: 0;">
+
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link w-50 active" id="nav-parse-tab" data-bs-toggle="tab" data-bs-target="#nav-parse"
+              type="button" role="tab" aria-controls="nav-parse" aria-selected="true">Parse</button>
+            <button class="nav-link w-50" id="nav-extract-tab" data-bs-toggle="tab" data-bs-target="#nav-extract"
+              type="button" role="tab" aria-controls="nav-extract" aria-selected="false">Extract</button>
+          </div>
+        </nav>
+
+        <!-- FIX: tab-content is the flex child that must shrink — min-height:0 is critical -->
+        <div class="tab-content" id="nav-tabContent">
+
+          <!-- PARSE TAB -->
+          <!-- FIX: removed flex-grow-1 from here — tab-content CSS handles sizing -->
+          <div class="tab-pane fade show active" id="nav-parse"
+            role="tabpanel" aria-labelledby="nav-parse-tab" tabindex="0">
+
+            <div class="output-header d-sm-flex d-block">
+              <h4 class="output-title">Parsed Output (Markdown)</h4>
+              <div class="output-tabs mt-sm-0 mt-3">
+                <button class="tab-button" [class.active]="activeTab === 'markdown'"
+                  (click)="setActiveTab('markdown')">Markdown</button>
+              </div>
+            </div>
+
+            <!-- FIX: output-content fills remaining height and clips overflow -->
+            <div class="output-content">
+              @if (activeTab === 'markdown') {
+              <div class="markdown-output">
+                <div class="code-header d-block d-sm-flex">
+                  <div class="code-actions mt-sm-0 mt-3">
+                    <button class="action-button" (click)="toggleMarkdownView()">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      {{ showRenderedMarkdown ? 'Source' : 'Rendered' }}
+                    </button>
+                    <button class="action-button" (click)="copyToClipboard('markdown')">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                      </svg>
+                      Copy
+                    </button>
+                    <button class="action-button" (click)="downloadMarkdownFile()">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      Download
+                    </button>
+                  </div>
+                </div>
+
+                <!-- FIX: markdown-content scrolls internally, does not push height outward -->
+                <div class="markdown-content">
+                  @if (!showRenderedMarkdown) {
+                  <pre class="markdown-source">{{ markdownContent }}</pre>
+                  } @else {
+                  <div class="rendered-markdown" [innerHTML]="safeMarkdownContent"></div>
+                  }
+                </div>
+              </div>
+              }
+            </div>
+          </div><!-- END PARSE TAB -->
+
+          <!-- EXTRACT TAB -->
+          <!-- FIX: same structural classes as parse pane so both behave identically -->
+          <div class="tab-pane fade" id="nav-extract"
+            role="tabpanel" aria-labelledby="nav-extract-tab" tabindex="0">
+
+            <!-- FIX: extract-tab-content scrolls internally -->
+            <div class="extract-tab-content">
+
+              @if (isExtracting) {
+              <div class="extraction-loading">
+                <div class="loading-content">
+                  <div class="spinner"></div>
+                  <h4>{{ extractionProgress }}</h4>
+                  <p class="loading-subtitle">This may take a few moments...</p>
+                </div>
+              </div>
+
+              } @else if (showExtractionResults) {
+              <div class="extraction-results">
+                <div class="results-header d-flex justify-content-between align-items-center">
+                  <div>
+                    <h4 class="results-title">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      Extraction Results
+                    </h4>
+                    <p class="results-subtitle">Successfully extracted from entire document</p>
+                  </div>
+                  <button class="btn btn-light" (click)="showOrHideJson()">
+                    {{ showRawData ? 'Show JSON' : 'Show Raw Data' }}
+                  </button>
+                </div>
+
+                <div
+                  class="extraction-actions mb-3 d-flex justify-content-around justify-content-md-center align-items-center gap-1">
+                  <button class="action-button py-2 px-3" (click)="copyExtractedResults()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Copy
+                  </button>
+                  <button class="action-button py-2 px-3" (click)="downloadExtractedJson()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7,10 12,15 17,10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download
+                  </button>
+                  <button class="action-button py-2 px-3 secondary" (click)="showExtractionResults = false">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Schema
+                  </button>
+                </div>
+
+                @if (showRawData) {
+                <div class="result-raw-content">
+                  @for (section of getDataSections(); track section.title; let i = $index) {
+                  <div class="card mb-3 p-2 mx-4 bg-light border-0 rounded-3">
+                    <div>
+                      <h6 class="mb-0">{{ section.title }}</h6>
+                    </div>
+                    <div class="card-body p-2">
+                      <table class="table table-borderless table-sm mb-0 bg-light">
+                        <tbody>
+                          @for (item of section.items; track item.key) {
+                          <tr>
+                            <td class="text-muted bg-light" style="width: 40%;">{{ item.key }}:</td>
+                            <td class="fw-medium bg-light">{{ item.value || '-' }}</td>
+                          </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  }
+                </div>
+                } @else {
+                <div class="results-content card m-1">
+                  <div class="extracted-json-preview">
+                    <pre class="json-preview">{{ extractedData | json }}</pre>
+                  </div>
+                </div>
+                }
+              </div>
+
+              } @else {
+
+              @if (mode !== 'demo') {
+              <div class="mb-3">
+                <label for="doc_type_id" class="form-label">Document Schemas</label>
+                <select id="doc_type_id" [formControl]="$any(extractForm.get('doc_type_id'))"
+                  class="form-select rounded-3" (change)="onDocTypeChange($any($event.target).value)">
+                  <option value="" disabled selected>Choose a Document Type</option>
+                  <option value="others">Others</option>
+                  @for (item of Schemas; track $index) {
+                  <option [value]="item.doc_type_id">{{ item.document_type }}</option>
+                  }
+                </select>
+              </div>
+              }
+
+              <div class="extract-header mt-3 mb-2 d-flex justify-content-between align-items-center">
+                <div>
+                  <h4 class="extract-title">Schema Definition</h4>
+                  <p class="extract-subtitle">Define the schema for data extraction</p>
+                </div>
+                <button type="button" (click)="toggleJsonView()" class="btn btn-light">
+                  <svg viewBox="0 0 24 24" width="1.2em" height="1.2em">
+                    <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                      stroke-width="2" d="m7 8l-4 4l4 4m10-8l4 4l-4 4M14 4l-4 16"></path>
+                  </svg>
+                  {{ showJsonOnClick ? 'Hide JSON' : 'Show JSON' }}
+                </button>
+              </div>
+
+              @if (!filteredApiResponse) {
+              <div class="no-data-message">
+                <div class="alert alert-info">
+                  <strong>No parsed data available.</strong> Please parse a document first to define extraction schema.
+                </div>
+              </div>
+              } @else {
+              @if (!showJsonOnClick) {
+              <form [formGroup]="extractForm" (ngSubmit)="onExtractSubmit()" class="extract-form">
+                <div class="schema-container">
+                  <div class="schema-table-wrapper">
+                    <table class="schema-table overflow-x-auto">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Description</th>
+                          <th>Required</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody formArrayName="fields">
+                        @for (field of fields.controls; track $index; let i = $index) {
+                        @let fieldGroup = getFieldGroup(field);
+                        @let fieldType = fieldGroup.get('type')?.value;
+                        @let isObjectType = fieldType === 'Object';
+                        @let isArrayType = fieldType === 'Array';
+
+                        <tr [formGroupName]="i" class="schema-row">
+                          <td>
+                            <input type="text" formControlName="field_name" placeholder="Field Name"
+                              class="form-control form-control-sm"
+                              [class.is-invalid]="fieldGroup.get('field_name')?.invalid && fieldGroup.get('field_name')?.touched">
+                            @if (fieldGroup.get('field_name')?.invalid && fieldGroup.get('field_name')?.touched) {
+                            <div class="invalid-feedback d-block">Field Name is required</div>
+                            }
+                          </td>
+                          <td>
+                            <select formControlName="type" class="form-select form-select-sm"
+                              (change)="onTypeChange(i)">
+                              @for (type of getFieldTypeOptions(); track type) {
+                              <option [value]="type">{{ type }}</option>
+                              }
+                            </select>
+                          </td>
+                          <td>
+                            <input type="text" formControlName="description"
+                              placeholder="Describe what this field contains..." class="form-control form-control-sm"
+                              [class.is-invalid]="fieldGroup.get('description')?.invalid && fieldGroup.get('description')?.touched">
+                          </td>
+                          <td class="text-center">
+                            <input type="checkbox" formControlName="required" class="form-check-input"
+                              id="required-{{i}}">
+                          </td>
+                          <td class="text-center">
+                            <button type="button" (click)="removeField(i)" class="btn btn-sm border-0 remove-btn"
+                              title="Remove this field" [disabled]="fields.length <= 1">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 16 18"
+                                fill="currentColor">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M8.26793 17.3334C7.13876 17.3334 6.03793 17.3209 4.94876 17.2984C3.55543 17.2709 2.59126 16.3675 2.43376 14.9409C2.17126 12.5742 1.72209 6.99588 1.71793 6.94004C1.68959 6.59588 1.94626 6.29421 2.29043 6.26671C2.62959 6.25754 2.93626 6.49588 2.96376 6.83921C2.96793 6.89588 3.41626 12.455 3.67626 14.8034C3.76543 15.6142 4.20293 16.0325 4.97459 16.0484C7.05793 16.0925 9.18376 16.095 11.4754 16.0534C12.2954 16.0375 12.7388 15.6275 12.8304 14.7975C13.0888 12.4692 13.5388 6.89588 13.5438 6.83921C13.5713 6.49588 13.8754 6.25588 14.2163 6.26671C14.5604 6.29504 14.8171 6.59588 14.7896 6.94004C14.7846 6.99671 14.3329 12.5892 14.0729 14.935C13.9113 16.3909 12.9496 17.2767 11.4979 17.3034C10.3871 17.3225 9.31543 17.3334 8.26793 17.3334Z" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M15.3191 4.8244H1.18744C0.842439 4.8244 0.562439 4.5444 0.562439 4.1994C0.562439 3.8544 0.842439 3.5744 1.18744 3.5744H15.3191C15.6641 3.5744 15.9441 3.8544 15.9441 4.1994C15.9441 4.5444 15.6641 4.8244 15.3191 4.8244Z" />
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                  d="M12.5961 4.82443C11.6478 4.82443 10.8244 4.1486 10.6378 3.2186L10.4353 2.20526C10.3928 2.0511 10.2169 1.91693 10.0169 1.91693H6.48944C6.28944 1.91693 6.11361 2.0511 6.06278 2.2436L5.86861 3.2186C5.68278 4.1486 4.85861 4.82443 3.91028 4.82443C3.56528 4.82443 3.28528 4.54443 3.28528 4.19943C3.28528 3.85443 3.56528 3.57443 3.91028 3.57443C4.26528 3.57443 4.57361 3.3211 4.64361 2.97276L4.84611 1.95943C5.05194 1.18276 5.72444 0.666931 6.48944 0.666931H10.0169C10.7819 0.666931 11.4544 1.18276 11.6519 1.92193L11.8636 2.97276C11.9328 3.3211 12.2411 3.57443 12.5961 3.57443C12.9411 3.57443 13.2211 3.85443 13.2211 4.19943C13.2211 4.54443 12.9411 4.82443 12.5961 4.82443Z" />
+                              </svg>
+                            </button>
+                          </td>
+                        </tr>
+
+                        <!-- IF TYPE IS OBJECT -->
+                        @if (isObjectType) {
+                        @let objectProperties = getSubFields(fieldGroup);
+                        @if (objectProperties) {
+                        <tr class="object-row">
+                          <td colspan="5" class="p-0">
+                            <div class="array-container bg-light p-3 border-top">
+                              <div class="array-header d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Object Properties</h6>
+                              </div>
+                              <div class="array-items-list">
+                                <table class="table table-sm table-bordered bg-white">
+                                  <thead>
+                                    <tr>
+                                      <th>Property</th>
+                                      <th>Type</th>
+                                      <th>Description</th>
+                                      <th>Required</th>
+                                      <th>Actions</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    @for (subField of objectProperties.controls; track $index; let j = $index) {
+                                    @let subGroup = getFormGroup(subField);
+                                    @let subNameCtrl = getFormControl(subGroup, 'field_name');
+                                    @let subTypeCtrl = getFormControl(subGroup, 'type');
+                                    @let subDescCtrl = getFormControl(subGroup, 'description');
+                                    @let subReqCtrl = getFormControl(subGroup, 'required');
+                                    <tr>
+                                      <td><input type="text" [formControl]="subNameCtrl" placeholder="Property name"
+                                          class="form-control form-control-sm"></td>
+                                      <td>
+                                        <select [formControl]="subTypeCtrl" class="form-select form-select-sm">
+                                          @for (pt of getPrimitiveTypeOptions(); track pt) {
+                                          <option [value]="pt">{{ pt }}</option>
+                                          }
+                                        </select>
+                                      </td>
+                                      <td><input type="text" [formControl]="subDescCtrl"
+                                          placeholder="Property description" class="form-control form-control-sm"></td>
+                                      <td class="text-center"><input type="checkbox" [formControl]="subReqCtrl"
+                                          class="form-check-input"></td>
+                                      <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                          (click)="removeSubField(fieldGroup, j)" title="Remove property"
+                                          [disabled]="objectProperties.length <= 1">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                            fill="currentColor" viewBox="0 0 16 16">
+                                            <path
+                                              d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                            <path fill-rule="evenodd"
+                                              d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                          </svg>
+                                        </button>
+                                      </td>
+                                    </tr>
+                                    }
+                                  </tbody>
+                                </table>
+                              </div>
+                              <div class="mb-2 mt-1">
+                                <button type="button"
+                                  class="btn btn-sm btn-outline-primary w-100 d-flex fs-sm justify-content-center align-items-center"
+                                  (click)="addSubField(fieldGroup)">
+                                  + Add Property
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                        }
+                        }
+
+                        <!-- IF TYPE IS ARRAY -->
+                        @if (isArrayType) {
+                        @let itemsGroup = getItemsFormGroup(fieldGroup);
+                        @if (itemsGroup) {
+                        <tr class="array-row">
+                          <td colspan="5" class="p-0">
+                            <div class="array-container bg-light p-3 border-top">
+                              <div class="array-header d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="mb-0">Array Items Schema</h6>
+                                <select [formControl]="getFormControl(itemsGroup, 'type')"
+                                  class="form-select form-select-sm w-auto" (change)="onArrayItemTypeChange(i)">
+                                  @for (t of getValueTypeOptions(fieldGroup); track t) {
+                                  <option [value]="t">{{ t }}</option>
+                                  }
+                                </select>
+                              </div>
+
+                              @if (isArrayObjectType(fieldGroup)) {
+                              @let arrayItemProperties = getArrayItemProperties(fieldGroup);
+                              @if (arrayItemProperties) {
+                              <div class="array-items-list">
+                                <table class="table table-sm table-bordered bg-white">
+                                  <thead>
+                                    <tr>
+                                      <th>Property</th>
+                                      <th>Type</th>
+                                      <th>Description</th>
+                                      <th>Required</th>
+                                      <th>Actions</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    @for (itemProp of arrayItemProperties.controls; track $index; let k = $index) {
+                                    @let itemPropGroup = getFormGroup(itemProp);
+                                    @let propNameControl = getFormControl(itemPropGroup, 'field_name');
+                                    @let propTypeControl = getFormControl(itemPropGroup, 'type');
+                                    @let propDescControl = getFormControl(itemPropGroup, 'description');
+                                    @let propRequiredControl = getFormControl(itemPropGroup, 'required');
+                                    <tr>
+                                      <td><input type="text" [formControl]="propNameControl"
+                                          placeholder="Property name" class="form-control form-control-sm"></td>
+                                      <td>
+                                        <select [formControl]="propTypeControl" class="form-select form-select-sm">
+                                          @for (valueType of getPrimitiveTypeOptions(); track valueType) {
+                                          <option [value]="valueType">{{ valueType }}</option>
+                                          }
+                                        </select>
+                                      </td>
+                                      <td><input type="text" [formControl]="propDescControl"
+                                          placeholder="Property description" class="form-control form-control-sm"></td>
+                                      <td class="text-center"><input type="checkbox"
+                                          [formControl]="propRequiredControl" class="form-check-input"></td>
+                                      <td class="text-center">
+                                        <button type="button" class="btn btn-sm btn-outline-danger"
+                                          (click)="removeArrayItemProperty(fieldGroup, k)" title="Remove property"
+                                          [disabled]="arrayItemProperties.length <= 1">
+                                          <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12"
+                                            fill="currentColor" viewBox="0 0 16 16">
+                                            <path
+                                              d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                            <path fill-rule="evenodd"
+                                              d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                          </svg>
+                                        </button>
+                                      </td>
+                                    </tr>
+                                    }
+                                  </tbody>
+                                </table>
+                              </div>
+                              }
+                              <div class="mb-2 mt-1">
+                                <button type="button"
+                                  class="btn btn-sm btn-outline-primary w-100 d-flex fs-sm justify-content-center align-items-center"
+                                  (click)="addArrayItemProperty(fieldGroup)">
+                                  + Add Item Property
+                                </button>
+                              </div>
+                              }
+                            </div>
+                          </td>
+                        </tr>
+                        }
+                        }
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <button type="button" (click)="addField()"
+                    class="btn btn-sm add-field-btn w-100 d-flex fs-sm justify-content-center align-items-center">
+                    + Add Field
+                  </button>
+
+                  <div class="schema-actions mt-3">
+                    <div class="extract-form-actions w-100">
+                      <button type="submit" class="btn btn-primary btn-sm apply-btn w-100"
+                        [disabled]="extractForm.invalid">
+                        Apply Schema
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+              } @else {
+              <div class="raw-json-view">
+                <h5>Form JSON Data</h5>
+                <pre class="code-content json-code card p-2 bg-body-secondary"><code>{{ extractForm.value | json }}</code></pre>
+              </div>
+              }
+              }
+              }
+            </div><!-- END extract-tab-content -->
+          </div><!-- END EXTRACT TAB -->
+
+        </div><!-- END tab-content -->
+      </div><!-- END output-section -->
+
+    </div>
+  </div>
+  }
+
+  @if (showFullPreview) {
+  <div class="preview-popup">
+    <button class="close-btn" (click)="closeFullPreview()">✕</button>
+    @if (!isPdf) {
+    <img [src]="previewUrl" class="full-preview-image" />
+    }
+    @if (isPdf) {
+    <iframe [attr.data-key]="pdfViewerKey" [src]="safePreviewUrl" class="full-preview-pdf"></iframe>
+    }
+  </div>
+  }
+
+</div>

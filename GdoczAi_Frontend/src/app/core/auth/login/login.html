@@ -1,0 +1,190 @@
+<section class="login-page">
+  <div class="container-fluid h-100 ps-0">
+    <div class="row h-100">
+      <div class="col-lg-6 bg-white d-flex align-items-center justify-content-center">
+        <div class="login-container d-block">
+          <!-- Logo -->
+          <div class="login-logo text-start mt-2 ms-5">
+            <img src="/assets/icons/logo.svg" alt="DATALAB" class="img-fluid">
+          </div>
+          <div class="login-right">
+            <!-- Sign In -->
+            @if (enableSignUp === 'sign_in') {
+            <div class="login-form-box">
+              <!-- Welcome Text -->
+              <div class="flex flex-col gap-2 mb-4">
+                <h1 class="welcome-text fs-2xl">Sign in to your account</h1>
+                <p class="subtitle-text">Don't have an account?
+                  <a class="txt-tertiary cursor-pointer" (click)="changePage('sign_up')">Sign Up</a>
+                </p>
+              </div>
+
+              <!-- Login Form -->
+              <form [formGroup]="loginForm" (ngSubmit)="loginForm.valid && loginSubmit()" novalidate>
+                <!-- Email Field -->
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" formControlName="email" class="form-control"
+                    [ngClass]="{'is-invalid': (submitted || loginForm.get('email')?.touched) && loginForm.get('email')?.invalid}" />
+                  @if ((submitted || loginForm.get('email')?.touched) && loginForm.get('email')?.invalid){
+                  <div class="error-message">
+                    @if (loginForm.get('email')?.errors?.['required']){
+                    <div>Email is required.</div>
+                    }
+                    @if (loginForm.get('email')?.errors?.['pattern']) {
+                    <div>Enter valid email address.</div>
+                    }
+                  </div>
+                  }
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label for="password">Password</label>
+                    <a type="button" class="txt-tertiary" (click)="changePage('forgot_password')">Forgot your
+                      password?</a>
+                  </div>
+                  <div class="password-wrapper">
+                    <input [attr.type]="isPassView ? 'text' : 'password'" formControlName="password" autocomplete="off"
+                      class="form-control" id="password"
+                      [ngClass]="{'is-invalid': (submitted || loginForm.get('password')?.touched) && loginForm.get('password')?.invalid}" />
+                    <button type="button" class="toggle-password" (click)="togglePasswordView()"
+                      [attr.aria-label]="isPassView ? 'Hide password' : 'Show password'">
+                      @if(isPassView){
+                      <svg viewBox="0 0 24 24" width="1.5rem" height="1.5rem" class="h-4 w-4">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="2">
+                          <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0-4 0"></path>
+                          <path d="M21 12q-3.6 6-9 6t-9-6q3.6-6 9-6t9 6"></path>
+                        </g>
+                      </svg>
+                      } @else {
+                      <svg viewBox="0 0 24 24" width="1.5rem" height="1.5rem" class="h-4 w-4">
+                        <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                          stroke-width="2">
+                          <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828"></path>
+                          <path d="M16.681 16.673A8.7 8.7 0 0 1 12 18q-5.4 0-9-6q1.908-3.18 4.32-4.674m2.86-1.146A9 9 0 0 1 12 6q5.4 0 9 6q-1 1.665-2.138 2.87M3 3l18 18"></path>
+                        </g>
+                      </svg>
+                      }
+                    </button>
+                  </div>
+                  @if ((submitted || loginForm.get('password')?.touched) &&
+                  loginForm.get('password')?.invalid) {
+                  <div class="error-message">
+                    @if (loginForm.get('password')?.errors?.['required']) {
+                      <div>Password is required.</div>
+                    }
+                    @if (loginForm.get('password')?.errors?.['pattern']) {
+                      <div>Password must be at least 8 characters, with uppercase, number and special character.</div>
+                    }
+                  </div>
+                  }
+                </div>
+
+                <!-- Submit Button -->
+                 <div class="d-flex">
+                   <button type="button" class="btn-login bg-white text-dark" [routerLink]="'/auth/demo'" target="_blank">Try Demo</button>
+                   <button type="submit" class="btn-login ms-1">Sign In</button>
+                 </div>
+              </form>
+            </div>
+            }
+
+            <!-- Sign Up -->
+            @if (enableSignUp === 'sign_up') {
+            <div class="login-form-box">
+              <!-- Welcome Text -->
+              <div class="flex flex-col gap-2 mb-4">
+                <h1 class="welcome-text fs-2xl">Create your account</h1>
+                <p class="subtitle-text">Already have an account?
+                  <a class="txt-tertiary cursor-pointer" (click)="changePage('sign_in')">Sign In</a>
+                </p>
+              </div>
+
+              <!-- Use the standalone sign-up component -->
+              <app-sign-up (otpRequested)="onOtpRequested($event)" (viewChange)="onViewChange($event)">
+              </app-sign-up>
+            </div>
+            }
+
+            <!-- Forgot Password -->
+            @if (enableSignUp === 'forgot_password') {
+            <div class="login-form-box">
+              <div class="flex flex-col gap-2 mb-4">
+                <h1 class="welcome-text fs-2xl">Reset your password</h1>
+                <p class="subtitle-text">Remembered it?
+                  <a class="txt-tertiary cursor-pointer" (click)="changePage('sign_in')">Sign In</a>
+                </p>
+              </div>
+
+              <!-- Forgot Password Form -->
+              <app-forgot-password (formSubmitted)="onFpasswordSubmit($event)"
+                (viewChange)="onViewChange($event)"></app-forgot-password>
+            </div>
+            }
+
+            <!-- Reset Password -->
+            @if (enableSignUp === 'reset_password') {
+            <div class="login-form-box">
+              <div class="flex flex-col gap-2 mb-4">
+                <h1 class="welcome-text fs-2xl">Reset your password</h1>
+                <p class="subtitle-text">Remembered it?
+                  <a class="txt-tertiary cursor-pointer" (click)="changePage('sign_in')">Sign In</a>
+                </p>
+              </div>
+
+              <div data-slot="alert" class="d-flex border border p-3 text-success gap-2 rounded-3 align-items-center">
+                <svg viewBox="0 0 24 24" width="30" height="30" class="h-4 w-4">
+                  <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0"></path>
+                    <path d="m9 12l2 2l4-4"></path>
+                  </g>
+                </svg>
+                <div>If the email belongs to a registered user, you will receive a password reset link.</div>
+              </div>
+            </div>
+            }
+
+          </div>
+
+          <!-- Footer Links -->
+          <div class="d-flex justify-content-center text-center">
+            <p class="txt-tertiary fs-xsm w-50">By using Gdocz, you agree to our
+              <a class="txt-tertiary text-decoration-none cursor-pointer"
+                routerLink="https://gramosoft.tech/terms_and_condition/" target="_blank">End User Terms</a> and
+              <a class="txt-tertiary text-decoration-none cursor-pointer" routerLink="https://gramosoft.tech/privacy/"
+                target="_blank">Privacy Policy</a>.
+            </p>
+          </div>
+          <p class="txt-tertiary fs-xsm mt-2 ms-5">© 2026
+            <a class="txt-tertiary cursor-pointer" href="https://gramosoft.tech/"
+              target="_blank">Gramosoft</a>
+          </p>
+
+        </div>
+      </div>
+
+      <!-- Right Side - Splash Section -->
+      <div class="col-lg-6 px-0">
+        <div class="splash h-100 rigth-cont">
+          <div class="right-cont-text">
+            <img src="/assets/img/banner.png" alt="GDOCZ" class="img-fluid">
+            <div class="mt-3 ps-3">
+              <h2 class="fs-3xl fw-700">Turn Documents into Data</h2>
+              <p class="fs-lg fw-400">GDocz transforms unstructured files into usable data for research and business.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTP Modal -->
+  @if (showOtpModal) {
+  <app-otp-verify (verifyOtp)="onVerifyOtp($event)" (closeModal)="onCloseOtpModal()" (resendOtp)="onResendOtp()">
+  </app-otp-verify>
+  }
+</section>

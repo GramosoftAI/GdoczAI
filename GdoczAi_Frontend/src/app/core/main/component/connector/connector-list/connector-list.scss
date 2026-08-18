@@ -1,0 +1,139 @@
+.connector-table {
+  thead tr {
+    background-color: #f8f9fa;
+
+    th {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: #6c757d;
+      padding: 0.875rem 1.25rem;
+      border-bottom: 1px solid #e9ecef;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: #f8f9fa;
+    }
+
+    td {
+      padding: 0.875rem 1.25rem;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f3f5;
+      font-size: 0.875rem;
+      color: #343a40;
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+}
+
+.type-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+
+  &.sftp {
+    background-color: rgba(102, 126, 234, 0.12);
+    color: #667eea;
+    border: 1px solid rgba(102, 126, 234, 0.25);
+  }
+
+  &.smtp {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  &.active {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #059669;
+
+    .status-dot {
+      background-color: #059669;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+  }
+
+  &.inactive {
+    background-color: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+
+    .status-dot {
+      background-color: #6b7280;
+    }
+  }
+}
+
+.btn-action-edit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  color: #495057;
+  background: #fff;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
+    color: #667eea;
+  }
+}
+
+.btn-action-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  color: #495057;
+  background: #fff;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #fff5f5;
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+}
+
+.empty-state {
+  .empty-icon svg {
+    color: #ced4da;
+  }
+}

@@ -1,0 +1,91 @@
+<form [formGroup]="signupForm" (ngSubmit)="onSubmit()" novalidate>
+  <!-- Name Field -->
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input type="text" id="name" formControlName="name" class="form-control"
+      [ngClass]="{'is-invalid': (submitted || signupForm.get('name')?.touched) && signupForm.get('name')?.invalid}" />
+    @if ((submitted || signupForm.get('name')?.touched) && signupForm.get('name')?.invalid){
+    <div class="error-message">
+      @if (signupForm.get('name')?.errors?.['required']){
+      <div>Name is required.</div>
+      }
+      @if (signupForm.get('name')?.errors?.['minlength']) {
+      <div>Name must be at least 3 characters long.</div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Email Field -->
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input type="email" id="email" formControlName="email" class="form-control"
+      [ngClass]="{'is-invalid': (submitted || signupForm.get('email')?.touched) && signupForm.get('email')?.invalid}" />
+    @if ((submitted || signupForm.get('email')?.touched) && signupForm.get('email')?.invalid){
+    <div class="error-message">
+      @if (signupForm.get('email')?.errors?.['required']){
+      <div>Email is required.</div>
+      }
+      @if (signupForm.get('email')?.errors?.['pattern']) {
+      <div>Enter valid email address.</div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Password Field -->
+  <div class="form-group">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <label for="password">Password</label>
+    </div>
+    <div class="password-wrapper">
+      <input [attr.type]="isPassView ? 'text' : 'password'" formControlName="password" autocomplete="off"
+        class="form-control" id="password"
+        [ngClass]="{'is-invalid': (submitted || signupForm.get('password')?.touched) && signupForm.get('password')?.invalid}" />
+      <button type="button" class="toggle-password" (click)="togglePasswordView()"
+        [attr.aria-label]="isPassView ? 'Hide password' : 'Show password'">
+        @if(isPassView){
+        <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" class="h-4 w-4">
+          <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+            <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0-4 0"></path>
+            <path d="M21 12q-3.6 6-9 6t-9-6q3.6-6 9-6t9 6"></path>
+          </g>
+        </svg>
+        } @else {
+        <svg viewBox="0 0 24 24" width="1.2em" height="1.2em" class="h-4 w-4">
+          <g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+            <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828"></path>
+            <path
+              d="M16.681 16.673A8.7 8.7 0 0 1 12 18q-5.4 0-9-6q1.908-3.18 4.32-4.674m2.86-1.146A9 9 0 0 1 12 6q5.4 0 9 6q-1 1.665-2.138 2.87M3 3l18 18">
+            </path>
+          </g>
+        </svg>
+        }
+      </button>
+    </div>
+    @if ((submitted || signupForm.get('password')?.touched) &&
+    signupForm.get('password')?.invalid) {
+    <div class="error-message">
+      @if (signupForm.get('password')?.errors?.['required']) {
+      <div>Password is required.</div>
+      }
+      @if (signupForm.get('password')?.errors?.['pattern']) {
+      <div>Password must be at least 8 characters, with uppercase, number and special character.</div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Submit Button -->
+<button type="submit" class="btn-login w-100" [disabled]="signupForm.invalid && submitted">
+  Send OTP
+</button>
+</form>
+
+<!-- Already have account link -->
+<div class="text-center mt-3">
+  <p class="subtitle-text">
+    Already have an account?
+    <a class="txt-tertiary cursor-pointer" (click)="navigateToSignIn()">Sign In</a>
+  </p>
+</div>

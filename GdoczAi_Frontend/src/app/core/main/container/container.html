@@ -1,0 +1,225 @@
+<div class="app-container">
+  <!-- Mobile Menu Toggle Button -->
+  @if (isMobileView && !isMobileSidebarOpen) {
+  <button class="mobile-menu-toggle" (click)="toggleSidebar()" aria-label="Toggle mobile menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-icon lucide lucide-menu">
+      <line x1="4" x2="20" y1="12" y2="12"></line>
+      <line x1="4" x2="20" y1="6" y2="6"></line>
+      <line x1="4" x2="20" y1="18" y2="18"></line>
+    </svg>
+  </button>
+  }
+
+  <!-- Overlay for mobile -->
+  <div class="overlay" [class.active]="isMobileOverlayActive" (click)="closeMobileSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div class="app-sidenav custom-scrollbar" [class.mobile-open]="isMobileSidebarOpen"
+    [class.sidebar-opened]="isSideBarOpen && !isMobileView"
+    [style.width.px]="isMobileView ? (isMobileSidebarOpen ? sidebarWidth : 0) : (isSideBarOpen ? sidebarWidth : sidebarClosedWidth)">
+
+    <!-- Fixed Header Section -->
+    <div class="sidebar-header fixed-header">
+      <div class="d-flex pt-2 pb-3" [ngClass]="{
+             'justify-content-between': (isSideBarOpen && !isMobileView) || isMobileSidebarOpen,
+             'justify-content-center': (!isSideBarOpen && !isMobileView) || (!isMobileSidebarOpen && isMobileView)
+           }">
+        @if ((isSideBarOpen && !isMobileView) || isMobileSidebarOpen) {
+        <button class="btn border-0" aria-label="DATALAB">
+          <img class="img img-fluid header-logo" src="/assets/icons/logo.svg" alt="DATALAB">
+        </button>
+        }
+        <button class="btn border-0 px-3 rounded-2 text-white toggle-icon" (click)="toggleSidebar()"
+          aria-label="Toggle sidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            class="lucide-icon lucide lucide-panel-left">
+            <rect width="18" height="18" x="3" y="3" rx="2"></rect>
+            <path d="M9 3v18"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable Content Section -->
+    <div class="navlist-content scrollable-content">
+      @for (menu of menus; track $index; let menuIndex = $index) {
+      <div class="accordion menu-accordian">
+        @if (menu.subMenu && menu.subMenu.length !== 0) {
+        <div class="accordion-item border-0 bg-transparent">
+          @if (menu.isShow) {
+          <button class="accordion-link acc-btn" [class.collapsed]="!isMenuOpen(menuIndex)"
+            [class.accordion-button]="(isSideBarOpen && !isMobileView) || isMobileSidebarOpen" type="button"
+            [attr.aria-expanded]="isMenuOpen(menuIndex)" aria-label="Menu Button" (click)="toggleMenu(menuIndex)">
+            <img class="img img-fluid me-2" [src]="menu.icon" alt="Icon" style="width: 20px; height: 20px;">
+            <span class="d-block"
+              [class.d-none]="(!isSideBarOpen && !isMobileView) || (!isMobileSidebarOpen && isMobileView)">
+              {{ menu.screen_name }}
+            </span>
+          </button>
+          }
+
+          <div class="accordion-collapse" [class.show]="isMenuOpen(menuIndex)">
+            @for (subMenu of menu.subMenu; track $index; let subIndex = $index) {
+            @if (subMenu.subMenu && subMenu.subMenu.length !== 0) {
+            <div class="accordion-item border-0 bg-transparent">
+              @if (subMenu.isShow) {
+              <button class="accordion-link secondary" [class.collapsed]="!isSubMenuOpen(menuIndex, subIndex)"
+                [class.accordion-button]="(isSideBarOpen && !isMobileView) || isMobileSidebarOpen" type="button"
+                [attr.aria-expanded]="isSubMenuOpen(menuIndex, subIndex)" aria-label="Menu Button"
+                (click)="toggleSubMenu(menuIndex, subIndex)">
+                <img class="img img-fluid me-2" [src]="subMenu.icon" alt="Icon" style="width: 20px; height: 20px;">
+                <span class="d-block ps-4"
+                  [class.d-none]="(!isSideBarOpen && !isMobileView) || (!isMobileSidebarOpen && isMobileView)">
+                  {{ subMenu.screen_name }}
+                </span>
+              </button>
+              }
+              <div class="accordion-collapse" [class.show]="isSubMenuOpen(menuIndex, subIndex)">
+                @for (nestedSubMenu of subMenu.subMenu; track $index; let nestedIndex = $index) {
+                @if (nestedSubMenu.isShow) {
+                <button class="accordion-link secondary ps-5" [routerLink]="[nestedSubMenu.path]"
+                  routerLinkActive="active" aria-label="Menu Button" (click)="onMobileLinkClick()">
+                  <img class="img img-fluid me-2" [src]="nestedSubMenu.icon" alt="Icon"
+                    style="width: 20px; height: 20px;">
+                  <span class="d-block"
+                    [class.d-none]="(!isSideBarOpen && !isMobileView) || (!isMobileSidebarOpen && isMobileView)">
+                    {{ nestedSubMenu.screen_name }}
+                  </span>
+                </button>
+                }
+                }
+              </div>
+            </div>
+            } @else {
+            @if (subMenu.isShow) {
+            <button class="accordion-link secondary ps-3 ms-2" type="button" [routerLink]="[subMenu.path]"
+              routerLinkActive="active" aria-label="Menu Button" (click)="onMobileLinkClick()">
+              <img class="img img-fluid me-2" [src]="subMenu.icon" alt="Icon" style="width: 20px; height: 20px;">
+              <span class="d-block"
+                [class.d-none]="(!isSideBarOpen && !isMobileView) || (!isMobileSidebarOpen && isMobileView)">
+                {{ subMenu.screen_name }}
+              </span>
+            </button>
+            }
+            }
+            }
+          </div>
+        </div>
+        } @else {
+        @if (menu.isShow) {
+        <button class="accordion-link primary" type="button" [routerLink]="[menu.path]" routerLinkActive="active"
+          aria-label="Menu Button" (click)="onMobileLinkClick()">
+          <img class="img img-fluid me-2" [src]="menu.icon" alt="Icon" style="width: 20px; height: 20px;">
+          <span class="d-block"
+            [class.d-none]="(!isSideBarOpen && !isMobileView) || (!isMobileSidebarOpen && isMobileView)">
+            {{ menu.screen_name }}
+          </span>
+        </button>
+        }
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Fixed Footer Section -->
+    <div class="sidebar-footer fixed-footer">
+      <div class="accordion menu-accordian">
+        <!-- User Profile Dropdown -->
+        <div class="user-profile-dropdown">
+          <!-- User Info Button -->
+          <button class="accordion-link primary user-profile-btn w-100" type="button" (click)="toggleUserDropdown()"
+            aria-label="User profile menu">
+            <div class="d-flex align-items-center w-100">
+              <div class="user-avatar me-2">
+                <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center">
+                  {{ getUserInitials() }}
+                </div>
+              </div>
+              @if ((isSideBarOpen && !isMobileView) || isMobileSidebarOpen) {
+              <div class="user-info flex-grow-1 text-start">
+                <div class="user-name">{{ userData.name || 'User Name' }}</div>
+                <div class="user-email text-muted">{{ userData.email || 'user@example.com' }}</div>
+              </div>
+              }
+              @if ((isSideBarOpen && !isMobileView) || isMobileSidebarOpen) {
+              <div class="dropdown-arrow ms-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  class="lucide-icon lucide lucide-chevrons-up-down ml-auto size-4 text-dark">
+                  <path d="m7 15 5 5 5-5"></path>
+                  <path d="m7 9 5-5 5 5"></path>
+                </svg>
+              </div>
+              }
+            </div>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div class="dropdown-menu" [class.show]="isUserDropdownOpen">
+            <button class="dropdown-item" type="button" (click)="openLogoutConfirmation()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2">
+                <path d="m16 17 5-5-5-5"></path>
+                <path d="M21 12H9"></path>
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              </svg>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main [class.sidenav-opened]="isSideBarOpen && !isMobileView" [class.sidenav-closed]="!isSideBarOpen && !isMobileView"
+    class="w-100">
+    <div class="router-container my-5">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>
+
+<footer class="footer">
+  <p class="mb-0 text-dark text-center py-2 bg-white">
+    <small>Copyright 2026 © <a href="https://gramosoft.tech/" target="_blank">Gramosoft</a> All rights reserved</small>
+  </p>
+</footer>
+
+<!-- Logout Modal -->
+<div class="modal fade" [class.show]="showLogoutModal" [style.display]="showLogoutModal ? 'block' : 'none'"
+  style="background: rgba(0, 0, 0, 0.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg rounded-3 border-0 mx-5">
+      <!-- Header -->
+      <div class="modal-header border-0 d-flex justify-content-center bg-dark text-white rounded-top">
+        <h5 class="modal-title d-flex align-items-center gap-2 m-0 fs-xl">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+            class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16">
+            <path d="M8.982 1.566a1.13 1.13 0 0 0-1.964 0l-6.857 11.5c-.457.765.091 1.934.982 1.934h13.714
+                  c.89 0 1.438-1.169.982-1.934l-6.857-11.5zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8
+                  5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+          </svg>
+          Logout
+        </h5>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body text-center p-4 mt-3">
+        <p class="fs-md text-muted">Are you sure you want to Logout?</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer d-flex justify-content-center border-0 gap-2 pb-4">
+        <button type="button" class="btn btn-outline-secondary px-4 rounded-pill" (click)="closeLogoutModal()">
+          No
+        </button>
+        <button type="button" class="btn bg-dark px-4 rounded-pill text-white" (click)="confirmLogout()">
+          Yes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

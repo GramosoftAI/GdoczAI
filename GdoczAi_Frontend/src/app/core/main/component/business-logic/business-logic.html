@@ -1,0 +1,16 @@
+<div class="container">
+  <div class="d-flex align-items-center justify-content-between my-3">
+    <h3 class="fs-3xl mb-4">PreDefined Schema</h3>
+    <div class="d-flex gap-3">
+      <a class="btn btn-gradient px-5"
+         [routerLink]="'/main/business-logic/create'"
+         routerLinkActive="d-none"
+         [routerLinkActiveOptions]="{exact: true}">Create</a>
+      <a class="btn btn-gradient px-5"
+         [routerLink]="'/main/business-logic/list'"
+         routerLinkActive="d-none"
+         [routerLinkActiveOptions]="{exact: true}">Back</a>
+    </div>
+  </div>
+  <router-outlet></router-outlet>
+</div>
